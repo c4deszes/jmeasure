@@ -1,0 +1,41 @@
+package org.jmeasure.core.signal.sampler;
+
+import java.util.Iterator;
+
+import org.jmeasure.core.signal.sampler.Sampler;
+import org.jmeasure.core.signal.Signal;
+import org.jmeasure.core.signal.Signal.DataPoint;
+
+import lombok.Getter;
+
+/**
+ * EdgeSampler takes any signal and outputs a signal which is sampled at the given rate
+ */
+public class EdgeSampler<U extends Comparable<U>> implements Sampler<U, Signal<U>> {
+
+	@Getter
+	private long points;
+
+	public EdgeSampler(long points) {
+		this.points = points;
+	}
+
+	@Override
+	public Signal<U> sample(Signal<U> signal) {
+		Signal<U> output = new Signal<U>(signal.getId());
+		float timestep = signal.period() / points;
+		
+		Iterator<DataPoint<U>> point = signal.getData().iterator();
+		int index = 0;
+		
+		while(point.hasNext()) {
+			DataPoint<U> p = point.next();
+			for(;index * timestep < p.time || (!point.hasNext() && index < points);index++) {
+				output.add(index * timestep, p.value);
+			}
+		}
+		
+		return output;
+	}
+	
+}

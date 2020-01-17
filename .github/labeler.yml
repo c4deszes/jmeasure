@@ -1,0 +1,11 @@
+enhancement/core:
+  - measure-core/**/*
+
+enhancement/driver:
+  - measure-driver-*/**/*
+
+enhancement/cli:
+  - measure-cli/**/*
+
+samples:
+  - measure-samples/**/*
