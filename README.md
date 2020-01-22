@@ -6,7 +6,7 @@ The core consists of abstract interfaces for devices, communication interfaces a
 
 It is extended by drivers and factory classes for different vendors.
 
-Lastly it has a CLI and samples that should work given the right drivers. Samples include creating bode plots, U/I diagrams.
+Lastly it has a CLI and samples that should work given the right drivers. Samples include creating bode plots, measuring I-V curve.
 
 ## Usage
 
@@ -20,7 +20,26 @@ Lastly it has a CLI and samples that should work given the right drivers. Sample
 ## Examples
 
 ```java
-import
+@Service
+public class TestService implements Runnable {
+
+    @Autowired
+    private SCPISocketFactory socketFactory;
+
+    @Autowired
+    private SCPIDeviceFactory deviceFactory;
+
+    @Override
+    public void run() {
+        SCPISocket socket = socketFactory.connect("tcp://192.168.1.2:5025");
+        SCPIDevice device = deviceFactory.create(socket);
+
+        device.send(SCPI.resetDevice);
+        device.send(SCPICommand.builder().command("C1:OUTP").with("ON").with("LOAD", 50).build());
+
+        device.close();
+    }
+}
 ```
 
 ## CLI

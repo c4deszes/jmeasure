@@ -16,7 +16,9 @@
 	<modules>
 		<module>measure-core</module>
 		<module>measure-driver-siglent</module>
+		<module>measure-extension</module>
 		<module>measure-samples</module>
+		<module>measure-spring-adapter</module>
 		<module>measure-cli</module>
 	</modules>
 
@@ -35,7 +37,17 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jmeasure</groupId>
+				<artifactId>measure-extension</artifactId>
+				<version>0.1.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jmeasure</groupId>
 				<artifactId>measure-samples</artifactId>
+				<version>0.1.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jmeasure</groupId>
+				<artifactId>measure-spring-adapter</artifactId>
 				<version>0.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -60,4 +72,18 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
