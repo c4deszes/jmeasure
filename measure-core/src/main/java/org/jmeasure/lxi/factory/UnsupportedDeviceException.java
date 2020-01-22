@@ -1,4 +1,4 @@
-package org.jmeasure.lxi;
+package org.jmeasure.lxi.factory;
 
 /**
  * UnsupportedDeviceException

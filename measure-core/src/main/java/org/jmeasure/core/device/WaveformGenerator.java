@@ -10,8 +10,6 @@ import org.jmeasure.core.util.EnumParameters;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.jmeasure.core.device.configuration.ClockSource;
-
 /**
  * A waveform generator is a device capable of outputting a changing voltage signal
  * 
@@ -53,7 +51,7 @@ public interface WaveformGenerator {
 	 * Returns the arbitrary waveform stored on the device
 	 * 
 	 * @param id Waveform's id
-	 * @return Optional analog waveform, empty if signal doesn't exist
+	 * @return Analog waveform, empty if signal doesn't exist
 	 */
 	Optional<AnalogSignal> getAnalogSignal(String id);
 
@@ -92,6 +90,9 @@ public interface WaveformGenerator {
 	 * 
 	 * <p>For example, {@code supports(1, WaveformType.SINE, WaveformParameter.FREQUENCY, 120 000)}
 	 * should return true if the device is capable of outputting 120MHz sine waves on Channel 1
+	 * 
+	 * <p>Since it's not possible to validate whether certain parameters violate each other, that logic 
+	 * should instead be in the {@code setAnalogWaveform} function
 	 * 
 	 * @param type Waveform type
 	 * @param parameter Parameter type
@@ -207,5 +208,9 @@ public interface WaveformGenerator {
 		 * <p>You can assume this value is bool
 		 */
 		INVERTED
+	}
+
+	public static enum ClockSource {
+		INTERNAL, EXTERNAL
 	}
 }

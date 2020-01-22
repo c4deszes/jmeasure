@@ -3,6 +3,7 @@ package org.jmeasure.lxi.mock;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
  * MockSCPIDevice
  */
 @Slf4j
-public class MockSCPISocket implements SCPISocket {
+public abstract class MockSCPISocket implements SCPISocket {
 
 	private boolean connected = false;
 
@@ -46,16 +47,35 @@ public class MockSCPISocket implements SCPISocket {
 		return this.connected;
 	}
 
-	public Matcher matcher(String path, String command) {
+	/**
+	 * Matches the given command path to the incoming command
+	 * @param path
+	 * @param command
+	 * @return
+	 */
+	private Matcher matcher(String path, String command) {
 		Pattern regex = Pattern.compile(path);
 		return regex.matcher(command);
 	}
 
-	public Object[] resolve(Matcher matcher, Method method) {
+	/**
+	 * Resolves method parameters using the given SCPI command and matcher
+	 * 
+	 * 
+	 * 
+	 * @param matcher Matcher object, has to match before
+	 * @param method
+	 * @param command SCPICommand
+	 * @return
+	 */
+	private Object[] resolve(Matcher matcher, Method method, SCPICommand command) {
 		Object[] arguments = new Object[method.getParameterCount()];
 		for(int i=0;i<arguments.length;i++) {
 			Parameter param = method.getParameters()[i];
-			if(param.isNamePresent()) {
+			if(param.getType().equals(SCPICommand.class)) {
+				arguments[i] = command;
+			}
+			else if(param.isNamePresent()) {
 				String value = matcher.group(param.getName());
 				arguments[i] = resolve(value, param.getType());
 			}
@@ -63,43 +83,93 @@ public class MockSCPISocket implements SCPISocket {
 		return arguments;
 	}
 
-	public Object resolve(String value, Class<?> type) {
+	private Object resolve(String value, Class<?> type) {
 		if(type.equals(String.class)) {
 			return value;
 		}
-		else if(type.equals(Integer.class)) {
+		else if(type.equals(Integer.class) || type.equals(int.class)) {
 			return Integer.parseInt(value);
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException("Couldn't convert '" + value + "' to " + type.getSimpleName());
 	}
 
+	/**
+	 * 
+	 * @param object
+	 * @return
+	 */
+	private SCPICommand resolveReturnType(Object object) {
+		if(object instanceof SCPICommand) {
+			return (SCPICommand) object;
+		}
+		else if(object instanceof String) {
+			return new SCPICommand((String) object);
+		}
+		return null;
+	}
+
+	/**
+	 * Called when the socket has received a command
+	 * 
+	 * @param in Received SCPI command
+	 * @throws Exception
+	 */
 	protected void onReceive(SCPICommand in) throws Exception {
 		for(Method method: this.getClass().getMethods()) {
 			if(method.isAnnotationPresent(OnCommand.class)) {
 				OnCommand path = method.getAnnotation(OnCommand.class);
 				Matcher matcher = matcher(path.value(), in.getCommand());
 				if(matcher.find()) {
-					Object[] arguments = resolve(matcher, method);
+					Object[] arguments = resolve(matcher, method, in);
 					Object ret = method.invoke(this, arguments);
 
-					if(ret instanceof SCPICommand) {
-						this.pushResponse((SCPICommand) ret);
+					SCPICommand response = resolveReturnType(ret);
+					if(response != null) {
+						this.pushResponse(response);
 					}
 					return;
 				}
 			}
 		}
-		throw new NoSuchMethodException("No mapping found for '" + in.getCommand() + "'");
+		this.onNotMapped(in);
 	}
 
-	protected final void pushResponse(SCPICommand out) {
-		rxStream.offer(out);
+	/**
+	 * Pushes the SCPI command to the response stream
+	 * 
+	 * @param response SCPI response
+	 */
+	protected final void pushResponse(SCPICommand response) {
+		rxStream.offer(response);
 	}
 
-	@OnCommand("*IDN?")
-	private final SCPICommand onIDNQuery() {
+	/**
+	 * Called on identification query commands
+	 * 
+	 * @return Response including the device's identifier
+	 */
+	@OnCommand("\\*IDN\\?")
+	public final SCPICommand onIDNQuery() {
 		return new SCPICommand(idn.value());
 	}
+
+	@OnCommand("\\*OPC\\?")
+	public final SCPICommand onOPCQuery() {
+		return new SCPICommand("1");
+	}
+
+	/**
+	 * Called on reset command
+	 */
+	@OnCommand("\\*RST")
+	public abstract void onReset();
+
+	/**
+	 * Called when no mapping was found for the inbound command
+	 * 
+	 * @param command Inbound SCPI command
+	 */
+	public abstract void onNotMapped(SCPICommand command);
 
 	@Override
 	public final void send(SCPICommand... commands) throws IOException {
@@ -110,23 +180,21 @@ public class MockSCPISocket implements SCPISocket {
 			try {
 				this.onReceive(command);
 			} catch(Exception e) {
-				log.warn("Failed to invoke callback, reason: " + e.getMessage());
+				log.warn("Failed to invoke callback", e);
 			}
 		}
 	}
 
 	@Override
-	public final SCPICommand receive(long timeout) throws IOException {
+	public final Optional<SCPICommand> receive(long timeout) throws IOException {
 		try {
 			if(!isConnected()) {
 				throw new IOException("Device not connected.");
 			}
-			if(timeout == 0) {
-				return rxStream.poll();
-			}
-			return rxStream.poll(timeout, TimeUnit.MILLISECONDS);
+			SCPICommand response = timeout == 0 ? rxStream.take() : rxStream.poll(timeout, TimeUnit.MILLISECONDS);
+			return Optional.ofNullable(response);
 		} catch(InterruptedException e) {
-			throw new IOException("");
+			throw new IOException();
 		}
 	}
 	

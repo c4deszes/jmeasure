@@ -2,14 +2,20 @@ package org.jmeasure.lxi.socket;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.jmeasure.lxi.SCPISocketFactory.ISCPISocketFactory;
+
+import org.jmeasure.lxi.factory.ISCPISocketFactory;
 
 /**
- * RawSocketFactory
+ * This factory class is capable of creating Raw TCP sockets for SCPI communication
+ * 
+ * <p>
+ * It supports the VISA resource string syntax for raw tcp sockets.
+ * <p>	
+ * Format: <i>TCPIP[board]::[host address]::[port]::SOCKET</i>
  */
-public class RawSCPISocketFactory implements ISCPISocketFactory<RawSCPISocket> {
+public class RawSCPISocketFactory implements ISCPISocketFactory {
 
-	private Pattern pattern = Pattern.compile("TCPIP0::(?<host>.*)::(?<port>[0-9]{1,5})::SOCKET");
+	private Pattern pattern = Pattern.compile("TCPIP(?<board>[0-9]*)::(?<host>.*)::(?<port>[0-9]{1,5})::SOCKET");
 
 	@Override
 	public boolean supports(String connectionInfo) {

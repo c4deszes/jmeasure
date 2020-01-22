@@ -1,9 +1,9 @@
-package org.jmeasure.core.util;
+package org.jmeasure.core;
 
 /**
  * Util
  */
-public final class Util {
+public final class Units {
 
 	private static final float MEGA = 1000000.0f;
 

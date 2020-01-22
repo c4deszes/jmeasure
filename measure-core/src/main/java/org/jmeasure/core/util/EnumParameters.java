@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * EnumParameters
@@ -15,14 +14,6 @@ public class EnumParameters<T extends Enum<T>> {
 
 	public Set<T> getParameters() {
 		return params.keySet();
-	}
-
-	public boolean assertAsFloat(T param, Predicate<Float> predicate) {
-		try {
-			return predicate.test((float)params.get(param));
-		} catch(ClassCastException e) {
-			return false;
-		}
 	}
 
 	public float getFloat(T param) {

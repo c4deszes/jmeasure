@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -44,15 +45,7 @@ public class RawSCPISocket implements SCPISocket {
 
 	@Override
 	public void send(SCPICommand... commands) {
-		StringBuilder builder = new StringBuilder();
-		for(int i=0;i<commands.length;i++) {
-			builder.append(commands[i].toString());
-			if(i != commands.length - 1) {
-				builder.append(";");
-			}
-		}
-		builder.append("\n");
-		txStream.offer(builder.toString());
+		txStream.offer(SCPISocket.concat(commands));
 	}
 
 	private void receive() {
@@ -60,8 +53,6 @@ public class RawSCPISocket implements SCPISocket {
 			while (isConnected()) {
 				String input = reader.readLine();
 				rxStream.offer(new SCPICommand(input));
-
-				log.debug("Received " + truncate(input, 10));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -74,25 +65,17 @@ public class RawSCPISocket implements SCPISocket {
 				String command = txStream.take();
 				socket.getOutputStream().write(command.getBytes(StandardCharsets.ISO_8859_1));
 				socket.getOutputStream().flush();
-
-				log.debug("Transmitted " + truncate(command, 10));
 			}
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private String truncate(String in, int length) {
-		return (in.length() > length ? in.substring(0, length) + "..." : in.substring(0, in.length() - 1));
-	}
-
 	@Override
-	public SCPICommand receive(long timeout) throws IOException {
+	public Optional<SCPICommand> receive(long timeout) throws IOException {
 		try {
-			if(timeout == 0) {
-				return rxStream.take();
-			}
-			return rxStream.poll(timeout, TimeUnit.MILLISECONDS);
+			SCPICommand response = timeout == 0 ? rxStream.take() : rxStream.poll(timeout, TimeUnit.MILLISECONDS);
+			return Optional.ofNullable(response);
 		} catch(InterruptedException e) {
 			throw new IOException();
 		}

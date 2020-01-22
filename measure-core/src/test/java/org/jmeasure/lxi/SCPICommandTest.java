@@ -2,6 +2,8 @@ package org.jmeasure.lxi;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Optional;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -34,8 +36,8 @@ public class SCPICommandTest {
 	public void testNamedParameter() {
 		SCPICommand command = new SCPICommand("CMD PARAM1,VAL1,PARAM2");
 		assertEquals("CMD", command.getCommand());
-		assertEquals("VAL1", command.getParameter("PARAM1"));
-		assertEquals(null, command.getParameter("PARAM2"));
+		assertEquals("VAL1", command.getParameter("PARAM1").get());
+		assertEquals(true, !command.getParameter("PARAM2").isPresent());
 	}
 
 	@Test
@@ -56,7 +58,7 @@ public class SCPICommandTest {
 		SCPICommand command = SCPICommand.builder().command("CMD").with("PARAM1", "VAL1").with("PARAM2").build();
 		assertEquals("CMD", command.getCommand());
 		assertEquals(true, command.hasParameter("PARAM1"));
-		assertEquals("VAL1", command.getParameter("PARAM1"));
+		assertEquals("VAL1", command.getParameter("PARAM1").get());
 		assertEquals(false, command.hasParameter("PARAM3"));
 	}
 }

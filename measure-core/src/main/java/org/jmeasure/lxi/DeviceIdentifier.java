@@ -5,7 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * LXIDeviceInfo
+ * Device identifier, specified in the SCPI-99 standard
+ * 
+ * <p>
+ * Includes the device vendor, model, serial number and firmware version
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -16,9 +19,10 @@ public final class DeviceIdentifier {
 	private String firmwareVersion;
 
 	/**
+	 * Constructs an Identifier from the format seen in the LXI Discovery and Identification specification
 	 * 
-	 * @param raw
-	 * @return
+	 * @param raw Raw string in the 
+	 * @return Device identifier object
 	 */
 	public static DeviceIdentifier from(String raw) {
 		String[] info = raw.split(",");
@@ -29,12 +33,13 @@ public final class DeviceIdentifier {
 	}
 
 	/**
+	 * Constructs an Identifier from the fields found in LXI Discovery and Identification specification
 	 * 
-	 * @param manufacturer
-	 * @param model
-	 * @param serialNumber
-	 * @param firmwareVersion
-	 * @return
+	 * @param manufacturer Manufacturer of the device
+	 * @param model Model number
+	 * @param serialNumber Serial number
+	 * @param firmwareVersion Firmware version
+	 * @return Device identifier object
 	 */
 	public static DeviceIdentifier from(String manufacturer, String model, String serialNumber, String firmwareVersion) {
 		return new DeviceIdentifier(manufacturer, model, serialNumber, firmwareVersion);
@@ -42,7 +47,7 @@ public final class DeviceIdentifier {
 
 	/**
 	 * Returns the string representation of this identifier
-	 * @return
+	 * @return Raw string identifier
 	 */
 	public String value() {
 		return manufacturer + "," + model + "," + serialNumber + "," + firmwareVersion;
@@ -50,10 +55,10 @@ public final class DeviceIdentifier {
 
 	/**
 	 * Returns a string representing this identifier in a debug friendly way
-	 * @return
+	 * @return Debug string
 	 */
 	@Override
 	public String toString() {
-		return "dev(mf=" + manufacturer + ";model=" + model + ";sn=" + serialNumber + ";ver=" + firmwareVersion + ")";
+		return "[mf=" + manufacturer + ";model=" + model + ";sn=" + serialNumber + ";ver=" + firmwareVersion + "]";
 	}
 }
