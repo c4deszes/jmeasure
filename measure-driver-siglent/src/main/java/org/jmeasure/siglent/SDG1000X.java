@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.jmeasure.core.device.WaveformGenerator;
-import org.jmeasure.core.device.configuration.ClockSource;
 import org.jmeasure.core.signal.Waveform;
 import org.jmeasure.core.signal.Waveform.WaveformParameter;
 import org.jmeasure.core.signal.Waveform.WaveformType;
@@ -61,8 +60,8 @@ public class SDG1000X extends SCPIDevice implements WaveformGenerator {
 
 	private EdgeSampler<Float> sampler = new EdgeSampler<Float>(WAVE_LENGTH);
 
-	public SDG1000X(DeviceIdentifier deviceIdentifier, SCPISocket socket) throws IOException {
-		super(deviceIdentifier, socket);
+	public SDG1000X(SCPISocket socket, DeviceIdentifier deviceIdentifier) throws IOException {
+		super(socket, deviceIdentifier);
 	}
 
 	@Override
