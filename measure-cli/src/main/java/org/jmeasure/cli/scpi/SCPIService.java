@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.jmeasure.lxi.SCPIDevice;
-import org.jmeasure.lxi.SCPIDeviceFactory;
 import org.jmeasure.lxi.SCPISocket;
-import org.jmeasure.lxi.SCPISocketFactory;
+import org.jmeasure.lxi.factory.CompositeSCPIDeviceFactory;
+import org.jmeasure.lxi.factory.CompositeSCPISocketFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.converter.Converter;
@@ -24,10 +24,10 @@ import org.springframework.stereotype.Component;
 public class SCPIService implements ValueProvider, Converter<String, SCPIDevice> {
 
 	@Autowired
-	private SCPIDeviceFactory deviceFactory;
+	private CompositeSCPIDeviceFactory deviceFactory;
 
 	@Autowired
-	private SCPISocketFactory socketFactory;
+	private CompositeSCPISocketFactory socketFactory;
 
 	private Map<String, SCPIDevice> devices = new HashMap<>();
 

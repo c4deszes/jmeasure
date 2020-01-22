@@ -73,7 +73,7 @@ public class SCPIShell {
 				| InvocationTargetException | NoSuchMethodException | SecurityException c) {
 			return "Mock class couldn't be instantiated " + className + ", reason: " + c;
 		} catch(Exception e) {
-			return "Mock instance couldn't be initialized" + className + ", reason: " + e;
+			return "Mock instance couldn't be initialized " + className + ", reason: " + e;
 		}
 	}
 
@@ -97,11 +97,7 @@ public class SCPIShell {
 		try {
 			device.send(new SCPICommand(command));
 			if(!silent) {
-				SCPICommand response = device.receive(timeout);
-				if(response == null) {
-					return null;
-				}
-				return response.getRaw();
+				return device.receive(timeout).orElse(new SCPICommand("")).getRaw();
 			}
 			else {
 				Thread task = new Thread(() -> {
