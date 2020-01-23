@@ -57,6 +57,10 @@ public class SCPIDevice implements SCPISocket {
 		return this.getClass().getSimpleName() + "[model=" + deviceIdentifier.getModel() + ", sn=" + deviceIdentifier.getSerialNumber() + ", interface=" + socket.getClass().getSimpleName() + "]";
 	}
 
+	public final String getConnectionInfo() {
+		return socket.toString();
+	}
+
 	@Override
 	public final void send(SCPICommand... commands) throws IOException {
 		socket.send(commands);

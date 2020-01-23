@@ -95,6 +95,11 @@ public class RawSCPISocket implements SCPISocket {
 	}
 
 	@Override
+	public String toString() {
+		return "TCP0::" + this.getHost() + "::" + this.getPort() + "::SOCKET";
+	}
+
+	@Override
 	protected void finalize() throws Throwable {
 		this.disconnect();
 	}
