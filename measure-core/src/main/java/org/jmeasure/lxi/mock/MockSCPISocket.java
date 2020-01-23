@@ -26,7 +26,7 @@ public abstract class MockSCPISocket implements SCPISocket {
 
 	private BlockingQueue<SCPICommand> rxStream = new LinkedBlockingQueue<>(10);
 
-	private DeviceIdentifier idn;
+	private final DeviceIdentifier idn;
 
 	public MockSCPISocket(DeviceIdentifier idn) {
 		this.idn = idn;
@@ -45,6 +45,11 @@ public abstract class MockSCPISocket implements SCPISocket {
 	@Override
 	public final boolean isConnected() {
 		return this.connected;
+	}
+
+	@Override
+	public String toString() {
+		return "MOCK::" + this.getClass().getSimpleName() + "::" + (isConnected() ? "ACTIVE": "INACTIVE");
 	}
 
 	/**
@@ -119,7 +124,7 @@ public abstract class MockSCPISocket implements SCPISocket {
 			if(method.isAnnotationPresent(OnCommand.class)) {
 				OnCommand path = method.getAnnotation(OnCommand.class);
 				Matcher matcher = matcher(path.value(), in.getCommand());
-				if(matcher.find()) {
+				if(matcher.matches()) {
 					Object[] arguments = resolve(matcher, method, in);
 					Object ret = method.invoke(this, arguments);
 

@@ -20,7 +20,7 @@ public class MockSDG1000X extends MockSCPISocket {
 	@OnCommand("C1:BSWV\\?")
 	public SCPICommand basicWaveQuery() {
 		return SCPICommand.builder()
-							.command("C1:BSVW")
+							.command("C1:BSWV")
 							.with("FREQ", freq)
 							.build();
 	}
