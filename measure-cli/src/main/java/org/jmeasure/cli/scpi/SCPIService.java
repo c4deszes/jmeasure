@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.jmeasure.lxi.SCPIDevice;
-import org.jmeasure.lxi.SCPISocket;
-import org.jmeasure.lxi.factory.CompositeSCPIDeviceFactory;
-import org.jmeasure.lxi.factory.CompositeSCPISocketFactory;
+import org.jmeasure.core.device.ISocket;
+import org.jmeasure.core.scpi.ISCPISocket;
+import org.jmeasure.core.scpi.SCPIDevice;
+import org.jmeasure.core.scpi.SCPIDeviceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.converter.Converter;
@@ -24,32 +24,25 @@ import org.springframework.stereotype.Component;
 public class SCPIService implements ValueProvider, Converter<String, SCPIDevice> {
 
 	@Autowired
-	private CompositeSCPIDeviceFactory deviceFactory;
-
-	@Autowired
-	private CompositeSCPISocketFactory socketFactory;
+	private SCPIDeviceFactory deviceFactory;
 
 	private Map<String, SCPIDevice> devices = new HashMap<>();
 
 	public SCPIDevice connect(String path) throws Exception {
-		SCPISocket socket = socketFactory.create(path);
-		
-		return this.connect(socket);
+		return register(deviceFactory.create(path));
 	}
 
-	public SCPIDevice connect(SCPISocket socket) throws Exception {
-		SCPIDevice device = deviceFactory.connect(socket);
-		devices.put(device.getDeviceIdentifier().getSerialNumber(), device);
-	
-		return device;
+	public SCPIDevice connect(ISocket socket) throws Exception {
+		return register(deviceFactory.create(socket));
 	}
 
-	public SCPIDevice createAlias(SCPIDevice device, String alias) {
-		if(device == null) {
-			return null;
-		}
-		devices.put(alias, device);
-		return device;
+	public SCPIDevice connect(ISCPISocket socket) throws Exception {
+		return register(deviceFactory.create(socket));
+	}
+
+	private SCPIDevice register(SCPIDevice dev) {
+		devices.put(dev.getDeviceIdentifier().getSerialNumber(), dev);
+		return dev;
 	}
 
 	public List<SCPIDevice> listDevices() {

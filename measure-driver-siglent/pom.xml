@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>measure-driver-siglent</artifactId>
-	<name>Siglent Equipment Drivers</name>
+	<name>JMeasure Siglent Equipment Drivers</name>
 	<packaging>jar</packaging>
 
 	<parent>

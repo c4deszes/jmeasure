@@ -1,7 +1,7 @@
 package org.jmeasure.siglent.mock;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jmeasure.lxi.DeviceIdentifier;
+import org.jmeasure.core.visa.DeviceIdentifier;
 
 public class MockSDG1032X extends MockSDG1000X {
 	public MockSDG1032X() {

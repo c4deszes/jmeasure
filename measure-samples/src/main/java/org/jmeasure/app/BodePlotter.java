@@ -2,12 +2,11 @@ package org.jmeasure.app;
 
 import java.io.IOException;
 
-import org.jmeasure.core.device.Oscilloscope;
-import org.jmeasure.core.device.WaveformGenerator;
+import org.jmeasure.core.instrument.Oscilloscope;
+import org.jmeasure.core.instrument.WaveformGenerator;
 import org.jmeasure.core.signal.Waveform;
 import org.jmeasure.core.signal.Waveform.WaveformParameter;
 import org.jmeasure.core.signal.Waveform.WaveformType;
-import org.jmeasure.lxi.socket.RawSCPISocket;
 
 public class BodePlotter {
 

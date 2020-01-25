@@ -1,10 +1,13 @@
 package org.jmeasure.siglent;
 
-import org.jmeasure.lxi.DeviceIdentifier;
-import org.jmeasure.lxi.SCPIDevice;
-import org.jmeasure.lxi.SCPISocket;
-import org.jmeasure.lxi.factory.ISCPIDeviceFactory;
-import org.jmeasure.lxi.factory.UnsupportedDeviceException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
+import org.jmeasure.core.scpi.ISCPIDeviceFactory;
+import org.jmeasure.core.scpi.ISCPISocket;
+import org.jmeasure.core.scpi.SCPIDevice;
+import org.jmeasure.core.visa.DeviceIdentifier;
+import org.jmeasure.core.visa.UnsupportedDeviceException;
 import org.jmeasure.siglent.SDG1000X;
 
 /**
@@ -18,11 +21,14 @@ public class SiglentDeviceFactory implements ISCPIDeviceFactory {
 	}
 
 	@Override
-	public SCPIDevice create(SCPISocket socket, DeviceIdentifier info) throws UnsupportedDeviceException {
+	public SCPIDevice create(ISCPISocket socket, DeviceIdentifier info) throws UnsupportedDeviceException, IOException {
 		try {
 			Class<? extends SCPIDevice> klass = lookupModel(info.getModel());
-			return klass.getConstructor(SCPISocket.class, DeviceIdentifier.class).newInstance(socket, info);
+			return klass.getConstructor(ISCPISocket.class, DeviceIdentifier.class).newInstance(socket, info);
 		} catch(Exception e) {
+			if(e.getCause() instanceof IOException) {
+				throw (IOException) e.getCause();
+			}
 			throw new UnsupportedDeviceException(e);
 		}
 	}

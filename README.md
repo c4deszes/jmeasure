@@ -31,7 +31,7 @@ public class TestService implements Runnable {
 
     @Override
     public void run() {
-        SCPISocket socket = socketFactory.connect("tcp://192.168.1.2:5025");
+        SCPISocket socket = socketFactory.connect("TCP0::192.168.1.2::5025::SOCKET");
         SCPIDevice device = deviceFactory.create(socket);
 
         device.send(SCPI.resetDevice);
@@ -47,8 +47,8 @@ public class TestService implements Runnable {
 The command-line interface can be used to test out some functionality, such as sending signals to a waveform generator or making measurements on an oscilloscope. It's also an easy way to communicate with any device.
 
 ```sh
-shell:>scpi connect TCP::192.168.1.2:5025::SOCKET
-Connected SDG1032X via TCP::192.168.1.2::5025::SOCKET --alias wavegen
+shell:>scpi connect TCP::192.168.1.2:5025::SOCKET --alias wavegen
+Connected SDG1032X via TCP::192.168.1.2::5025::SOCKET
 shell:>scpi send wavegen "*IDN?"
 Siglent Technologies,SDG1032X,SDG1XABC123456,1.01.01.33R1
 shell:>scpi send wavegen "C1:OUTP ON" --silent
@@ -56,3 +56,9 @@ shell:>_
 ```
 
 ## Building
+
+1. `./mvnw install
+2. `./mvnw -B package`
+
+## Contributing
+

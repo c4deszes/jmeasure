@@ -1,20 +1,22 @@
 package org.jmeasure.siglent.mock;
 
-import org.jmeasure.core.Units;
-import org.jmeasure.lxi.DeviceIdentifier;
-import org.jmeasure.lxi.SCPICommand;
-import org.jmeasure.lxi.mock.MockSCPISocket;
-import org.jmeasure.lxi.mock.OnCommand;
+import org.jmeasure.core.scpi.SCPICommand;
+import org.jmeasure.core.scpi.mock.MockSCPISocket;
+import org.jmeasure.core.scpi.mock.OnCommand;
+import org.jmeasure.core.util.Units;
+import org.jmeasure.core.visa.DeviceIdentifier;
 
 /**
  * MockWaveformGenerator
  */
 public class MockSDG1000X extends MockSCPISocket {
 
-	private float freq = (float) Units.kilo(1);
+	private float freq;
 
 	public MockSDG1000X(DeviceIdentifier deviceIdentifier) {
 		super(deviceIdentifier);
+
+		this.onReset();
 	}
 
 	@OnCommand("C1:BSWV\\?")
@@ -32,14 +34,12 @@ public class MockSDG1000X extends MockSCPISocket {
 
 	@Override
 	public void onReset() {
-		// TODO Auto-generated method stub
-
+		freq = Units.kilo(1);
 	}
 
 	@Override
 	public void onNotMapped(SCPICommand command) {
-		// TODO Auto-generated method stub
-
+		
 	}
 	
 }

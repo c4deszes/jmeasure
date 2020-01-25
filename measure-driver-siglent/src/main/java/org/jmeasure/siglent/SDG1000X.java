@@ -7,17 +7,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.jmeasure.core.device.WaveformGenerator;
 import org.jmeasure.core.signal.Waveform;
 import org.jmeasure.core.signal.Waveform.WaveformParameter;
 import org.jmeasure.core.signal.Waveform.WaveformType;
 import org.jmeasure.core.signal.analog.AnalogSignal;
+import org.jmeasure.core.instrument.WaveformGenerator;
+import org.jmeasure.core.scpi.ISCPISocket;
+import org.jmeasure.core.scpi.SCPICommand;
+import org.jmeasure.core.scpi.SCPIDevice;
 import org.jmeasure.core.signal.Signal;
 import org.jmeasure.core.signal.sampler.EdgeSampler;
-import org.jmeasure.lxi.DeviceIdentifier;
-import org.jmeasure.lxi.SCPICommand;
-import org.jmeasure.lxi.SCPIDevice;
-import org.jmeasure.lxi.SCPISocket;
+import org.jmeasure.core.visa.DeviceIdentifier;
 
 /**
  * SDG1000X
@@ -60,7 +60,7 @@ public class SDG1000X extends SCPIDevice implements WaveformGenerator {
 
 	private EdgeSampler<Float> sampler = new EdgeSampler<Float>(WAVE_LENGTH);
 
-	public SDG1000X(SCPISocket socket, DeviceIdentifier deviceIdentifier) throws IOException {
+	public SDG1000X(ISCPISocket socket, DeviceIdentifier deviceIdentifier) throws IOException {
 		super(socket, deviceIdentifier);
 	}
 

@@ -3,7 +3,7 @@ package org.jmeasure.core.signal.digital;
 import org.jmeasure.core.signal.CompositeSignal;
 import org.jmeasure.core.signal.Signal;
 
-import static org.jmeasure.core.Units.*;
+import static org.jmeasure.core.util.Units.*;
 
 import lombok.Getter;
 
