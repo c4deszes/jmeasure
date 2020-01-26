@@ -15,6 +15,12 @@
 	<description>Core API for Test and measurement</description>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.openmuc/jrxtx -->
+		<dependency>
+			<groupId>org.openmuc</groupId>
+			<artifactId>jrxtx</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

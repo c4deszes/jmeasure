@@ -1,4 +1,4 @@
-package org.jmeasure.core.visa;
+package org.jmeasure.core.lxi.raw;
 
 import java.io.IOException;
 import java.net.Socket;

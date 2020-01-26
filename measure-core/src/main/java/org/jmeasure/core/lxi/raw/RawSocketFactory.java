@@ -1,9 +1,9 @@
-package org.jmeasure.core.visa.factory;
+package org.jmeasure.core.lxi.raw;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jmeasure.core.visa.RawSocket;
+import org.jmeasure.core.visa.factory.ISocketFactory;
 
 /**
  * This factory class is capable of creating Raw TCP sockets for SCPI communication

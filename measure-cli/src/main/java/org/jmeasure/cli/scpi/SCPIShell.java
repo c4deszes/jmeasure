@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.jmeasure.core.lxi.raw.RawSocket;
 import org.jmeasure.core.scpi.ISCPISocket;
 import org.jmeasure.core.scpi.SCPICommand;
 import org.jmeasure.core.scpi.SCPIDevice;
 import org.jmeasure.core.visa.DeviceIdentifier;
-import org.jmeasure.core.visa.RawSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
