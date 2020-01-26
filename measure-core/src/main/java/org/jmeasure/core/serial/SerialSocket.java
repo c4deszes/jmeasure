@@ -29,7 +29,7 @@ public class SerialSocket implements ISocket {
     }
 
     @Override
-    public String getConnectionInfo() {
+    public String getResourceString() {
         // TODO Auto-generated method stub
         return null;
     }

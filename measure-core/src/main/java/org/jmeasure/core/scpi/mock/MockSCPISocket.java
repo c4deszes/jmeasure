@@ -49,7 +49,7 @@ public abstract class MockSCPISocket implements ISCPISocket {
 	}
 
 	@Override
-	public String getConnectionInfo() {
+	public String getResourceString() {
 		return "MOCK::" + this.getClass().getSimpleName() + "::" + (isConnected() ? "ACTIVE" : "INACTIVE");
 	}
 

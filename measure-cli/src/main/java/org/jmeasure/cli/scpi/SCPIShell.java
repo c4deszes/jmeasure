@@ -129,8 +129,8 @@ public class SCPIShell {
 			out.append(idn.getFirmwareVersion());
 			out.append('\n');
 
-			out.append("Interface: ");
-			out.append(device.getConnectionInfo());
+			out.append("Resource string: ");
+			out.append(device.getResourceString());
 			out.append('\n');
 
 			out.append("Capabilities: ");

@@ -38,7 +38,7 @@ public class RawSocket implements ISocket {
     }
 
     @Override
-    public String getConnectionInfo() {
+    public String getResourceString() {
         return String.format("TCP%d::%s::%d::SOCKET", board, host, port);
     }
 

@@ -15,8 +15,8 @@ public abstract class SCPISocketAdapter implements ISCPISocket {
     }
 
     @Override
-    public String getConnectionInfo() {
-        return this.adapter.getConnectionInfo();
+    public String getResourceString() {
+        return this.adapter.getResourceString();
     }
 
     @Override

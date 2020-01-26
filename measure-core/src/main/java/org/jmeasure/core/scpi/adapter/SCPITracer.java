@@ -38,13 +38,13 @@ public class SCPITracer extends SCPISocketAdapter {
     @Override
     public void connect() throws IOException {
         super.connect();
-        this.log(super.getConnectionInfo() + " ~ Connected.");
+        this.log(super.getResourceString() + " ~ Connected.");
     }
 
     @Override
     public void disconnect() {
         super.disconnect();
-        this.log(super.getConnectionInfo() + " ~ Disconnected.");
+        this.log(super.getResourceString() + " ~ Disconnected.");
     }
 
     @Override
@@ -55,7 +55,7 @@ public class SCPITracer extends SCPISocketAdapter {
     private void outbound(SCPICommand... commands) {
         try {
             String out = ISCPISocket.concat("", commands);
-            this.log(super.getConnectionInfo() + " <- " + truncate(out, 30));
+            this.log(super.getResourceString() + " <- " + truncate(out, 30));
             outbound.write(out.getBytes());
         } catch(IOException e) {
             log.warn("Error writing outbound message.", e);
@@ -64,7 +64,7 @@ public class SCPITracer extends SCPISocketAdapter {
 
     private void inbound(SCPICommand command) {
         try {
-            this.log(super.getConnectionInfo() + " <- " + truncate(command.getRaw(), 30));
+            this.log(super.getResourceString() + " <- " + truncate(command.getRaw(), 30));
             inbound.write(command.getRaw().getBytes());
         } catch (IOException e) {
             log.warn("Error writing inbound message.", e);

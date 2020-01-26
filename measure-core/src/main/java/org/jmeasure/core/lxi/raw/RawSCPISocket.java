@@ -72,8 +72,8 @@ public class RawSCPISocket implements ISCPISocket {
     }
 
     @Override
-    public String getConnectionInfo() {
-        return socket.getConnectionInfo();
+    public String getResourceString() {
+        return socket.getResourceString();
     }
 
 }

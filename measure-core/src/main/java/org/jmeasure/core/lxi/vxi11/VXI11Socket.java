@@ -54,7 +54,7 @@ public class VXI11Socket implements ISCPISocket {
     }
 
     @Override
-    public String getConnectionInfo() {
+    public String getResourceString() {
         // TODO Auto-generated method stub
         return null;
     }

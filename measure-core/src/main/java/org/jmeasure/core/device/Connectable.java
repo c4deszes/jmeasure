@@ -36,7 +36,7 @@ public interface Connectable extends AutoCloseable {
 	 * 
 	 * @return Connection information
 	 */
-	public String getConnectionInfo();
+	public String getResourceString();
 
 	/**
 	 * Disconnects the device, effectively final and should only be called in a try-resource block
