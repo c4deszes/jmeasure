@@ -1,4 +1,4 @@
-package org.jmeasure.core.scpi;
+package org.jmeasure.core.lxi.raw;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -7,33 +7,32 @@ import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 import org.jmeasure.core.device.ISocket;
+import org.jmeasure.core.scpi.ISCPISocket;
+import org.jmeasure.core.scpi.SCPICommand;
 
-class SCPISocket implements ISCPISocket {
+public class RawSCPISocket implements ISCPISocket {
+
+    public final static String DEFAULT_TERMINATION = "\n";
+
+    private final String termination;
 
     private final ISocket socket;
 
-    public SCPISocket(final ISocket socket) {
-        this.socket = socket;
+    public RawSCPISocket(final ISocket socket) {
+        this(socket, DEFAULT_TERMINATION);
     }
-    
-    public final static String concat(SCPICommand... commands) {
-		StringBuilder builder = new StringBuilder();
-		for(int i=0;i<commands.length;i++) {
-			builder.append(commands[i].toString());
-			if(i != commands.length - 1) {
-				builder.append(";");
-			}
-		}
-		builder.append('\n');
-		return builder.toString();
-	}
+
+    public RawSCPISocket(final ISocket socket, final String termination) {
+        this.socket = socket;
+        this.termination = termination;
+    }
 
     @Override
     public void send(SCPICommand... commands) throws IOException {
         if(commands.length == 0) {
             return;
         }
-        ByteBuffer output = ByteBuffer.wrap(concat(commands).getBytes(StandardCharsets.ISO_8859_1));
+        ByteBuffer output = ByteBuffer.wrap(ISCPISocket.concat(this.termination, commands).getBytes(StandardCharsets.ISO_8859_1));
         socket.send(output);
     }
 

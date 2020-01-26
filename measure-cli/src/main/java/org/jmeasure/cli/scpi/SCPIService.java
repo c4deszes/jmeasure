@@ -1,5 +1,6 @@
 package org.jmeasure.cli.scpi;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,8 +8,7 @@ import java.util.stream.Collectors;
 
 import org.jmeasure.core.device.ISocket;
 import org.jmeasure.core.scpi.ISCPISocket;
-import org.jmeasure.core.scpi.SCPIDevice;
-import org.jmeasure.core.scpi.SCPIDeviceFactory;
+import org.jmeasure.core.scpi.factory.SCPIDeviceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.converter.Converter;
@@ -21,31 +21,31 @@ import org.springframework.stereotype.Component;
  * SCPIService
  */
 @Component
-public class SCPIService implements ValueProvider, Converter<String, SCPIDevice> {
+public class SCPIService implements ValueProvider, Converter<String, ISCPISocket> {
 
 	@Autowired
 	private SCPIDeviceFactory deviceFactory;
 
-	private Map<String, SCPIDevice> devices = new HashMap<>();
+	private Map<String, ISCPISocket> devices = new HashMap<>();
 
-	public SCPIDevice connect(String path) throws Exception {
+	public ISCPISocket connect(String path) throws IOException {
 		return register(deviceFactory.create(path));
 	}
 
-	public SCPIDevice connect(ISocket socket) throws Exception {
+	public ISCPISocket connect(ISocket socket) throws IOException {
 		return register(deviceFactory.create(socket));
 	}
 
-	public SCPIDevice connect(ISCPISocket socket) throws Exception {
+	public ISCPISocket connect(ISCPISocket socket) throws IOException {
 		return register(deviceFactory.create(socket));
 	}
 
-	private SCPIDevice register(SCPIDevice dev) {
+	private ISCPISocket register(ISCPISocket dev) throws IOException {
 		devices.put(dev.getDeviceIdentifier().getSerialNumber(), dev);
 		return dev;
 	}
 
-	public List<SCPIDevice> listDevices() {
+	public List<ISCPISocket> listDevices() {
 		return devices.entrySet()
 				.stream()
 				.sorted((a, b) -> Integer.compare(a.getValue().hashCode(), b.getValue().hashCode()))
@@ -53,7 +53,7 @@ public class SCPIService implements ValueProvider, Converter<String, SCPIDevice>
 				.collect(Collectors.toList());
 	}
 
-	public boolean disconnect(SCPIDevice device) {
+	public boolean disconnect(ISCPISocket device) {
 		if(device != null) {
 			device.disconnect();
 			devices.entrySet().removeIf(entry -> entry.getValue() == device);
@@ -64,7 +64,7 @@ public class SCPIService implements ValueProvider, Converter<String, SCPIDevice>
 
 	@Override
 	public boolean supports(MethodParameter parameter, CompletionContext completionContext) {
-		if(parameter.getParameterType().isAssignableFrom(SCPIDevice.class)) {
+		if(parameter.getParameterType().isAssignableFrom(ISCPISocket.class)) {
 			return true;
 		}
 		return false;
@@ -81,7 +81,7 @@ public class SCPIService implements ValueProvider, Converter<String, SCPIDevice>
 	}
 
 	@Override
-	public SCPIDevice convert(String source) {
+	public ISCPISocket convert(String source) {
 		return devices.get(source);
 	}
 

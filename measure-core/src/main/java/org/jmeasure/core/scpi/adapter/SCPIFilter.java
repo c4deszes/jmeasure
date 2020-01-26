@@ -1,9 +1,13 @@
-package org.jmeasure.core.scpi;
+package org.jmeasure.core.scpi.adapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import org.jmeasure.core.scpi.ISCPISocket;
+import org.jmeasure.core.scpi.SCPICommand;
+import org.jmeasure.core.scpi.SCPISocketAdapter;
 
 /**
  * SCPIFilter

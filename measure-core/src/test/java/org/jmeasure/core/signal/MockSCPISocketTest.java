@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.jmeasure.core.scpi.SCPI;
 import org.jmeasure.core.scpi.SCPICommand;
-import org.jmeasure.core.scpi.SCPIDevice;
 import org.jmeasure.core.scpi.mock.MockSCPISocket;
 import org.jmeasure.core.scpi.mock.OnCommand;
 import org.jmeasure.core.visa.DeviceIdentifier;
@@ -21,7 +20,8 @@ public class MockSCPISocketTest {
 
     @Test
     public void testIdn() throws IOException {
-        SCPIDevice device = new SCPIDevice(new TestDevice());
+        TestDevice device = new TestDevice();
+        device.connect();
         SCPICommand response = device.query(SCPI.idnQuery, 1000).get();
         DeviceIdentifier id = DeviceIdentifier.from(response.getRaw());
 
@@ -35,7 +35,8 @@ public class MockSCPISocketTest {
 
     @Test
     public void testBasicCommand() throws IOException {
-        SCPIDevice device = new SCPIDevice(new TestDevice());
+        TestDevice device = new TestDevice();
+        device.connect();
         SCPICommand response = device.query(SCPICommand.builder().query("BASIC").build(), 1000).get();
 
         Assert.assertEquals(true, response.hasParameter("PARAM"));
@@ -46,7 +47,8 @@ public class MockSCPISocketTest {
 
     @Test
     public void testBasicParameter() throws IOException {
-        SCPIDevice device = new SCPIDevice(new TestDevice());
+        TestDevice device = new TestDevice();
+        device.connect();
         SCPICommand response = device.query(SCPICommand.builder().query("BASIC2").with("PARAM", "INPUT").build(), 1000).get();
 
         Assert.assertEquals(true, response.hasParameter("PARAM"));
@@ -57,7 +59,8 @@ public class MockSCPISocketTest {
 
     @Test
     public void testCommandPathInt() throws IOException {
-        SCPIDevice device = new SCPIDevice(new TestDevice());
+        TestDevice device = new TestDevice();
+        device.connect();
         SCPICommand response = device.query(SCPICommand.builder().command("C1:CMD").build(), 1000).get();
 
         Assert.assertEquals(true, response.hasParameter("PARAM"));

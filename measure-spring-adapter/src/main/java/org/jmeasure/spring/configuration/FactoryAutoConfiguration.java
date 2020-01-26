@@ -2,9 +2,12 @@ package org.jmeasure.spring.configuration;
 
 import java.util.List;
 
+import org.jmeasure.core.lxi.raw.RawSCPISocketFactory;
 import org.jmeasure.core.lxi.raw.RawSocketFactory;
-import org.jmeasure.core.scpi.ISCPIDeviceFactory;
-import org.jmeasure.core.scpi.SCPIDeviceFactory;
+import org.jmeasure.core.scpi.factory.ISCPIDeviceFactory;
+import org.jmeasure.core.scpi.factory.ISCPISocketFactory;
+import org.jmeasure.core.scpi.factory.SCPIDeviceFactory;
+import org.jmeasure.core.scpi.factory.SCPISocketFactory;
 import org.jmeasure.core.visa.factory.ISocketFactory;
 import org.jmeasure.core.visa.factory.SocketFactory;
 import org.jmeasure.siglent.SiglentDeviceFactory;
@@ -28,8 +31,16 @@ public class FactoryAutoConfiguration {
 	}
 
 	@Bean
-	public SCPIDeviceFactory deviceFactory(@Autowired SocketFactory socketFactory, List<ISCPIDeviceFactory> factories) {
-		return new SCPIDeviceFactory(socketFactory, factories);
+	public ISCPISocketFactory rawSCPISocketFactory() {
+		return new RawSCPISocketFactory();
+	}
+
+	@Bean
+	public SCPIDeviceFactory deviceFactory(
+		@Autowired(required = false) SocketFactory socketFactory,
+		@Autowired(required = false) SCPISocketFactory scpiFactory, 
+		List<ISCPIDeviceFactory> factories) {
+		return new SCPIDeviceFactory(socketFactory, scpiFactory, factories);
 	}
 
 	@Bean

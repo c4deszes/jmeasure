@@ -1,4 +1,4 @@
-package org.jmeasure.core.scpi;
+package org.jmeasure.core.scpi.factory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.jmeasure.core.device.ISocket;
+import org.jmeasure.core.scpi.ISCPISocket;
+import org.jmeasure.core.scpi.SCPI;
+import org.jmeasure.core.scpi.SCPICommand;
 import org.jmeasure.core.visa.DeviceIdentifier;
 import org.jmeasure.core.visa.UnsupportedDeviceException;
 import org.jmeasure.core.visa.factory.SocketFactory;
@@ -27,27 +30,30 @@ public class SCPIDeviceFactory {
 
 	private final SocketFactory socketFactory;
 
+	private final SCPISocketFactory scpiFactory;
+
 	private final List<ISCPIDeviceFactory> factories;
 
-	public SCPIDeviceFactory(final SocketFactory socketFactory, ISCPIDeviceFactory... factories) {
-		this(socketFactory, Arrays.asList(factories));
+	public SCPIDeviceFactory(final SocketFactory socketFactory, final SCPISocketFactory scpiFactory,ISCPIDeviceFactory... factories) {
+		this(socketFactory, scpiFactory, Arrays.asList(factories));
 	}
 
-	public SCPIDeviceFactory(final SocketFactory socketFactory, List<ISCPIDeviceFactory> factories) {
+	public SCPIDeviceFactory(final SocketFactory socketFactory, final SCPISocketFactory scpiFactory, List<ISCPIDeviceFactory> factories) {
 		this.socketFactory = socketFactory;
+		this.scpiFactory = scpiFactory;
 		this.factories = new LinkedList<>(factories);
 	}
 
-	public SCPIDevice create(String resourceURI) throws IOException {
+	public ISCPISocket create(String resourceURI) throws IOException {
 		return this.create(socketFactory.create(resourceURI));
 	}
 
-	public SCPIDevice create(ISocket socket) throws IOException {
-		return this.create(new SCPISocket(socket));
+	public ISCPISocket create(ISocket socket) throws IOException {
+		return this.create(scpiFactory.create(socket));
 	}
 
 	@SuppressWarnings("resource")
-	public SCPIDevice create(ISCPISocket socket) throws IOException {
+	public ISCPISocket create(ISCPISocket socket) throws IOException {
 		socket.connect();
 		socket.send(SCPI.idnQuery);
 		Optional<SCPICommand> response = socket.receive(timeout);
@@ -63,6 +69,6 @@ public class SCPIDeviceFactory {
 				log.warn("Failed to instantiate " + deviceIdentifier + " using " + factory, e);
 			}
 		}
-		return new SCPIDevice(socket, deviceIdentifier);
+		return socket;
 	}
 }

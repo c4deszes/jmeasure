@@ -7,7 +7,6 @@ import java.util.List;
 import org.jmeasure.core.lxi.raw.RawSocket;
 import org.jmeasure.core.scpi.ISCPISocket;
 import org.jmeasure.core.scpi.SCPICommand;
-import org.jmeasure.core.scpi.SCPIDevice;
 import org.jmeasure.core.visa.DeviceIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellCommandGroup;
@@ -32,7 +31,7 @@ public class SCPIShell {
 			@ShellOption(value = { "-p", "--path" }) String url) {
 
 		try {
-			SCPIDevice dev = scpi.connect(url);
+			ISCPISocket dev = scpi.connect(url);
 			return "Connected " + dev.getDeviceIdentifier().getSerialNumber() + " via " + url;
 		} catch (Exception e) {
 			return "Failed to connect to " + url + ", reason: " + e.getMessage();
@@ -46,7 +45,7 @@ public class SCPIShell {
 		try {
 			
 			RawSocket socket = new RawSocket(host, port);
-			SCPIDevice dev = scpi.connect(socket);
+			ISCPISocket dev = scpi.connect(socket);
 			return "Connected " + dev.getDeviceIdentifier().getModel() + " via " + socket.toString();
 		} catch (Exception e) {
 			return "Failed to connect to " + host + ":" + port + ", reason: " + e.getMessage();
@@ -59,7 +58,7 @@ public class SCPIShell {
 			Class<? extends ISCPISocket> klazz = (Class<? extends ISCPISocket>) Class.forName(className);
 
 			ISCPISocket mock = klazz.getConstructor().newInstance();
-			SCPIDevice dev = scpi.connect(mock);
+			ISCPISocket dev = scpi.connect(mock);
 
 			return "Connected " + dev + " via " + mock.getClass().getSimpleName();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -72,7 +71,7 @@ public class SCPIShell {
 
 	@ShellMethod(key="scpi send", value="Sends ")
 	public String scpiSend(
-		@ShellOption(value = {"-i", "--id"}) SCPIDevice device,
+		@ShellOption(value = {"-i", "--id"}) ISCPISocket device,
 		@ShellOption(value = {"-c", "--command"}) String command,
 		@ShellOption(value = {"-s", "--silent"}, defaultValue = "false") boolean silent,
 		@ShellOption(value = {"-t", "--timeout"}, defaultValue = "1000") long timeout) {
@@ -99,7 +98,7 @@ public class SCPIShell {
 
 	@ShellMethod(key="scpi disconnect", value="Disconnects the SCPI device")
 	public String scpiDisconnect(
-		@ShellOption(value = {"-i", "--id"}) SCPIDevice device) {
+		@ShellOption(value = {"-i", "--id"}) ISCPISocket device) {
 
 		if(scpi.disconnect(device)) {
 			return "Disconnected " + device;
@@ -109,44 +108,48 @@ public class SCPIShell {
 
 	@ShellMethod(key={"scpi info"}, value="Prints out device information")
 	public String scpiInfo(
-		@ShellOption(value = {"-i", "--id"}) SCPIDevice device) {
+		@ShellOption(value = {"-i", "--id"}) ISCPISocket device) {
 
-		StringBuilder out = new StringBuilder();
-		DeviceIdentifier idn = device.getDeviceIdentifier();
-		out.append("Manufacturer: ");
-		out.append(idn.getManufacturer());
-		out.append('\n');
+		try {
+			StringBuilder out = new StringBuilder();
+			DeviceIdentifier idn = device.getDeviceIdentifier();
+			out.append("Manufacturer: ");
+			out.append(idn.getManufacturer());
+			out.append('\n');
 
-		out.append("Model: ");
-		out.append(idn.getModel());
-		out.append('\n');
+			out.append("Model: ");
+			out.append(idn.getModel());
+			out.append('\n');
 
-		out.append("Serial number: ");
-		out.append(idn.getSerialNumber());
-		out.append('\n');
+			out.append("Serial number: ");
+			out.append(idn.getSerialNumber());
+			out.append('\n');
 
-		out.append("Firmware version: ");
-		out.append(idn.getFirmwareVersion());
-		out.append('\n');
+			out.append("Firmware version: ");
+			out.append(idn.getFirmwareVersion());
+			out.append('\n');
 
-		out.append("Interface: ");
-		out.append(device.getConnectionInfo());
-		out.append('\n');
+			out.append("Interface: ");
+			out.append(device.getConnectionInfo());
+			out.append('\n');
 
-		out.append("Capabilities: ");
-		for(Class<?> klass : device.getClass().getInterfaces()) {
-			out.append(klass.getSimpleName());
-			out.append(" ");
+			out.append("Capabilities: ");
+			for(Class<?> klass : device.getClass().getInterfaces()) {
+				out.append(klass.getSimpleName());
+				out.append(" ");
+			}
+
+			return out.toString();
+		} catch(IOException e) {
+			return "Failed to get device information, reason: " + e.getMessage();
 		}
-
-		return out.toString();
 	}
 
 	@ShellMethod(key={"scpi list", "scpi ls"}, value="Lists all SCPI devices")
 	public String scpiList() {
 		StringBuilder out = new StringBuilder();
-		List<SCPIDevice> devices = scpi.listDevices();
-		for(SCPIDevice dev : devices) {
+		List<ISCPISocket> devices = scpi.listDevices();
+		for(ISCPISocket dev : devices) {
 			out.append(dev);
 			out.append("\n");
 		}

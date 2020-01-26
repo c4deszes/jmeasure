@@ -1,8 +1,12 @@
-package org.jmeasure.core.scpi;
+package org.jmeasure.core.scpi.adapter;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
+
+import org.jmeasure.core.scpi.ISCPISocket;
+import org.jmeasure.core.scpi.SCPICommand;
+import org.jmeasure.core.scpi.SCPISocketAdapter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +28,7 @@ public class SCPITracer extends SCPISocketAdapter {
 
     private boolean consoleEnabled;
 
-    public SCPITracer(SCPISocket adapter, boolean consoleEnabled, FileOutputStream inbound, FileOutputStream outbound) {
+    public SCPITracer(ISCPISocket adapter, boolean consoleEnabled, FileOutputStream inbound, FileOutputStream outbound) {
         super(adapter);
         this.consoleEnabled = consoleEnabled;
         this.outbound = outbound;
@@ -50,7 +54,7 @@ public class SCPITracer extends SCPISocketAdapter {
 
     private void outbound(SCPICommand... commands) {
         try {
-            String out = SCPISocket.concat(commands);
+            String out = ISCPISocket.concat("", commands);
             this.log(super.getConnectionInfo() + " <- " + truncate(out, 30));
             outbound.write(out.getBytes());
         } catch(IOException e) {

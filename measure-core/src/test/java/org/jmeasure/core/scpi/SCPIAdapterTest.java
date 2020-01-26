@@ -2,6 +2,7 @@ package org.jmeasure.core.scpi;
 
 import java.io.IOException;
 
+import org.jmeasure.core.scpi.adapter.SCPIFilter;
 import org.jmeasure.core.scpi.mock.MockSCPISocket;
 import org.jmeasure.core.visa.DeviceIdentifier;
 import org.junit.Test;

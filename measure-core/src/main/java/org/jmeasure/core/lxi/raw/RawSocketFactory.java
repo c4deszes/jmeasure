@@ -31,8 +31,7 @@ public class RawSocketFactory implements ISocketFactory {
             int board = Integer.parseInt(matcher.group("board"));
 			return new RawSocket(host, port, board);
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException(connectionInfo + " doesn't match " + pattern.pattern());
 	}
-
 	
 }

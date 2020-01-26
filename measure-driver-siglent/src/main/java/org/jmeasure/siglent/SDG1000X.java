@@ -14,7 +14,7 @@ import org.jmeasure.core.signal.analog.AnalogSignal;
 import org.jmeasure.core.instrument.WaveformGenerator;
 import org.jmeasure.core.scpi.ISCPISocket;
 import org.jmeasure.core.scpi.SCPICommand;
-import org.jmeasure.core.scpi.SCPIDevice;
+import org.jmeasure.core.scpi.SCPISocketAdapter;
 import org.jmeasure.core.signal.Signal;
 import org.jmeasure.core.signal.sampler.EdgeSampler;
 import org.jmeasure.core.visa.DeviceIdentifier;
@@ -22,7 +22,7 @@ import org.jmeasure.core.visa.DeviceIdentifier;
 /**
  * SDG1000X
  */
-public class SDG1000X extends SCPIDevice implements WaveformGenerator {
+public class SDG1000X extends SCPISocketAdapter implements WaveformGenerator {
 
 	private final static Map<WaveformType, String> WF_TYPEMAP = new HashMap<>();
 
@@ -61,7 +61,7 @@ public class SDG1000X extends SCPIDevice implements WaveformGenerator {
 	private EdgeSampler<Float> sampler = new EdgeSampler<Float>(WAVE_LENGTH);
 
 	public SDG1000X(ISCPISocket socket, DeviceIdentifier deviceIdentifier) throws IOException {
-		super(socket, deviceIdentifier);
+		super(socket);
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class SDG1000X extends SCPIDevice implements WaveformGenerator {
 				.ifPresent(inverted -> builder.with("PLRT", inverted ? "INVT" : "NOR"));
 
 		this.send(builder.build());
-		this.waitForOPC(DEFAULT_TIMEOUT);
+		this.waitForOperation(DEFAULT_TIMEOUT);
 	}
 
 	@Override
@@ -90,22 +90,22 @@ public class SDG1000X extends SCPIDevice implements WaveformGenerator {
 
 		SCPICommand arbMode = channelCommand(channel, "BSWV").with("WVTP", "ARB").build();
 		this.send(arbMode);
-		waitForOPC(DEFAULT_TIMEOUT);
+		this.waitForOperation(DEFAULT_TIMEOUT);
 
 		SCPICommand srate = channelCommand(channel, "SRATE").with("MODE", "TARB").build();
 		this.send(srate);
-		waitForOPC(DEFAULT_TIMEOUT);
+		this.waitForOperation(DEFAULT_TIMEOUT);
 
 		SCPICommand wdata = channelCommand(channel, "WVDT").with("WVNM", signal.getId()).with("LENGTH", "32KB")
 				.with("FREQ", 1.0f / signal.period()).with("AMPL", signal.max() - signal.min())
 				.with("OFST", (signal.max() + signal.min()) / 2.0f)
 				.with("WAVEDATA", new String(binary(signal).array(), StandardCharsets.ISO_8859_1)).build();
 		this.send(wdata);
-		waitForOPC(DEFAULT_TIMEOUT);
+		this.waitForOperation(DEFAULT_TIMEOUT);
 
 		SCPICommand arbWave = channelCommand(channel, "ARWV").with("NAME", signal.getId()).build();
 		this.send(arbWave);
-		waitForOPC(DEFAULT_TIMEOUT);
+		this.waitForOperation(DEFAULT_TIMEOUT);
 	}
 
 	private static ByteBuffer binary(Signal<Float> signal) {
@@ -135,7 +135,7 @@ public class SDG1000X extends SCPIDevice implements WaveformGenerator {
 		}
 
 		this.send(commandBuilder.build());
-		waitForOPC(DEFAULT_TIMEOUT);
+		this.waitForOperation(DEFAULT_TIMEOUT);
 	}
 
 	public void validateWaveform(Waveform waveform) {
