@@ -15,6 +15,12 @@
 	<description>Core API for Test and measurement</description>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.acplt.remotetea/remotetea-oncrpc -->
+		<dependency>
+			<groupId>org.acplt.remotetea</groupId>
+			<artifactId>remotetea-oncrpc</artifactId>
+			<version>1.1.4</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openmuc/jrxtx -->
 		<dependency>
 			<groupId>org.openmuc</groupId>

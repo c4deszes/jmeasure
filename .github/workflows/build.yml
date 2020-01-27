@@ -1,7 +1,13 @@
 name: CI
 on: 
-  - push
-  - pull_request
+  push:
+    paths-ignore:
+      - '.github/templates/**'
+      - 'doc/**'
+      - 'README.md'
+      - '.vscode/**'
+  pull_request:
+    types: [opened]
 
 jobs:
   build:

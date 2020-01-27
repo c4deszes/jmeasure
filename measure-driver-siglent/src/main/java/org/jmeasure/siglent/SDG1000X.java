@@ -61,7 +61,7 @@ public class SDG1000X extends SCPISocketAdapter implements WaveformGenerator {
 	private EdgeSampler<Float> sampler = new EdgeSampler<Float>(WAVE_LENGTH);
 
 	public SDG1000X(ISCPISocket socket, DeviceIdentifier deviceIdentifier) throws IOException {
-		super(socket);
+		super(socket, deviceIdentifier);
 	}
 
 	@Override

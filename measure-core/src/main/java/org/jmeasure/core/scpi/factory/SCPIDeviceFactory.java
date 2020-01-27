@@ -10,6 +10,7 @@ import org.jmeasure.core.device.ISocket;
 import org.jmeasure.core.scpi.ISCPISocket;
 import org.jmeasure.core.scpi.SCPI;
 import org.jmeasure.core.scpi.SCPICommand;
+import org.jmeasure.core.scpi.SCPISocketAdapter;
 import org.jmeasure.core.visa.DeviceIdentifier;
 import org.jmeasure.core.visa.UnsupportedDeviceException;
 import org.jmeasure.core.visa.factory.SocketFactory;
@@ -69,6 +70,6 @@ public class SCPIDeviceFactory {
 				log.warn("Failed to instantiate " + deviceIdentifier + " using " + factory, e);
 			}
 		}
-		return socket;
+		return new SCPISocketAdapter(socket, deviceIdentifier);
 	}
 }

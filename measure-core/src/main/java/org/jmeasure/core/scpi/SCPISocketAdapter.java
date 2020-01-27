@@ -3,15 +3,33 @@ package org.jmeasure.core.scpi;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.jmeasure.core.visa.DeviceIdentifier;
+
+import lombok.AccessLevel;
+import lombok.Setter;
+
 /**
  * SCPISocketAdapter
  */
-public abstract class SCPISocketAdapter implements ISCPISocket {
+public class SCPISocketAdapter implements ISCPISocket {
 
     private final ISCPISocket adapter;
 
+    @Setter(value = AccessLevel.PROTECTED)
+    private DeviceIdentifier deviceIdentifier;
+
     public SCPISocketAdapter(final ISCPISocket adapter) {
+        this(adapter, null);
+    }
+
+    public SCPISocketAdapter(final ISCPISocket adapter, DeviceIdentifier deviceIdentifier) {
         this.adapter = adapter;
+        this.deviceIdentifier = deviceIdentifier;
+    }
+
+    @Override
+    public DeviceIdentifier getDeviceIdentifier() throws IOException {
+        return this.deviceIdentifier == null ? ISCPISocket.super.getDeviceIdentifier() : this.deviceIdentifier;
     }
 
     @Override
