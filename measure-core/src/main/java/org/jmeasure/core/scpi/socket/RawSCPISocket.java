@@ -1,4 +1,4 @@
-package org.jmeasure.core.lxi.raw;
+package org.jmeasure.core.scpi.socket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

@@ -2,12 +2,12 @@ package org.jmeasure.spring.configuration;
 
 import java.util.List;
 
-import org.jmeasure.core.lxi.raw.RawSCPISocketFactory;
 import org.jmeasure.core.lxi.raw.RawSocketFactory;
 import org.jmeasure.core.scpi.factory.ISCPIDeviceFactory;
 import org.jmeasure.core.scpi.factory.ISCPISocketFactory;
 import org.jmeasure.core.scpi.factory.SCPIDeviceFactory;
 import org.jmeasure.core.scpi.factory.SCPISocketFactory;
+import org.jmeasure.core.scpi.socket.RawSCPISocketFactory;
 import org.jmeasure.core.visa.factory.ISocketFactory;
 import org.jmeasure.core.visa.factory.SocketFactory;
 import org.jmeasure.siglent.SiglentDeviceFactory;
