@@ -27,4 +27,8 @@ public class DeviceReadResponse implements XdrAble {
         data = xdr.xdrDecodeDynamicOpaque();
     }
 
+    public int getError() {
+        return error.value;
+    }
+
 }

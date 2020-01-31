@@ -24,4 +24,8 @@ public class DeviceWriteResponse implements XdrAble {
         size = xdr.xdrDecodeInt();
     }
 
+    public int getError() {
+        return error.value;
+    }
+
 }

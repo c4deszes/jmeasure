@@ -1,5 +1,7 @@
 package org.jmeasure.core.lxi.vxi11;
 
+import java.lang.reflect.Field;
+
 /**
  * VXI11
  */
@@ -61,5 +63,22 @@ public class VXI11 {
         public final static int INVALID_ADDRESS = 21;
         public final static int ABORT = 23;
         public final static int CHANNEL_ALREADY_ESTABLISHED = 29;
+
+        public static String getErrorName(int code) {
+            try {
+                for(Field field : ErrorCode.class.getFields()) {
+                    if(field.getType() == int.class && field.getInt(null) == code) {
+                        return field.getName();
+                    }
+                }
+                return "UNKNOWN";
+            } catch(IllegalAccessException e) {
+                return "UNKNOWN";
+            }
+        }
+
+        public static String getErrorString(int code) {
+            return getErrorName(code) + " (" + code + ")";
+        }
     }
 }

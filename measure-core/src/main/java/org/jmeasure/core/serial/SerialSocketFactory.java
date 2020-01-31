@@ -31,7 +31,7 @@ public class SerialSocketFactory implements ISocketFactory {
 		String os = System.getProperty("os.name");
 		if(os.startsWith("Windows")) {
 			return "COM" + port;
-		} else if(os.contains("nix")) {
+		} else if(os.contains("nix") || os.contains("nux")) {
 			return "/dev/ttyS" + port;
 		}
 		return null;

@@ -43,12 +43,12 @@ public class SCPIShell {
 			@ShellOption(value = { "-p", "--port" }) int port) {
 
 		try {
-			
 			RawSocket socket = new RawSocket(host, port);
 			ISCPISocket dev = scpi.connect(socket);
+
 			return "Connected " + dev.getDeviceIdentifier().getModel() + " via " + socket.toString();
 		} catch (Exception e) {
-			return "Failed to connect to " + host + ":" + port + ", reason: " + e.getMessage();
+			return "Failed to connect to " + host + ":" + port + ", reason: " + e;
 		}
 	}
 

@@ -13,6 +13,9 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class DeviceIdentifier {
+
+	public final static DeviceIdentifier UNKNOWN = new DeviceIdentifier("-", "-", "-", "-");
+
 	private String manufacturer;
 	private String model;
 	private String serialNumber;
@@ -27,7 +30,7 @@ public final class DeviceIdentifier {
 	public static DeviceIdentifier from(String raw) {
 		String[] info = raw.split(",");
 		if(info.length != 4) {
-			throw new IllegalArgumentException("Device info must be 4 comma-separated fields as per IEEE 488.2");
+			throw new IllegalArgumentException("bad identifier: " + raw + " must be 4 comma-separated fields");
 		}
 		return new DeviceIdentifier(info[0], info[1], info[2], info[3]);
 	}

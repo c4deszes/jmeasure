@@ -20,6 +20,7 @@ import org.jmeasure.core.lxi.LXIDiscovery;
 import org.jmeasure.core.lxi.vxi11.portmap.Portmap;
 import org.jmeasure.core.lxi.vxi11.portmap.PortmapParams;
 import org.jmeasure.core.lxi.vxi11.portmap.PortmapResponse;
+import org.jmeasure.core.scpi.socket.RawSCPISocket;
 import org.jmeasure.core.visa.DeviceIdentifier;
 
 /**
@@ -29,17 +30,20 @@ public class VXI11Discovery implements LXIDiscovery {
 
     private final static int DEFAULT_TIMEOUT = 1000;
 
-    private final int timeout;
+    private int timeout;
 
-    private final boolean resolveDeviceInfo;
+    private boolean resolveDeviceInfo;
+
+    private int retransmissions;
 
     public VXI11Discovery() {
-        this(DEFAULT_TIMEOUT, true);
+        this(DEFAULT_TIMEOUT, true, 0);
     }
 
-    public VXI11Discovery(int timeout, boolean resolveDeviceInfo) {
+    public VXI11Discovery(int timeout, boolean resolveDeviceInfo, int retransmissions) {
         this.timeout = timeout;
         this.resolveDeviceInfo = resolveDeviceInfo;
+        this.retransmissions = retransmissions;
     }
 
     @Override
@@ -53,14 +57,28 @@ public class VXI11Discovery implements LXIDiscovery {
             OncRpcBroadcastListener callback = new OncRpcBroadcastListener(){
                 @Override
                 public void replyReceived(OncRpcBroadcastEvent evt) {
-                    devices.put(evt.getReplyAddress(), DeviceIdentifier.from("-,-,-,-"));
+                    devices.put(evt.getReplyAddress(), DeviceIdentifier.UNKNOWN);
                 }
             };
 
             PortmapResponse response = new PortmapResponse();
-            rpcClient.broadcastCall(Portmap.PROC_GETPORT, new PortmapParams(VXI11.DeviceCore.PROGRAM, VXI11.DeviceCore.VERSION, OncRpcProtocols.ONCRPC_TCP, 4), response, callback);
-            
-            
+
+            for(int i = 0; i < retransmissions + 1; i++) {
+                rpcClient.broadcastCall(Portmap.PROC_GETPORT, new PortmapParams(VXI11.DeviceCore.PROGRAM, VXI11.DeviceCore.VERSION, OncRpcProtocols.ONCRPC_TCP, 4), response, callback);
+            }
+
+            if(resolveDeviceInfo) {
+                devices.replaceAll((ip, dev) -> {
+                    try(RawSCPISocket socket = new RawSCPISocket(new VXI11Socket(ip))) {
+                        socket.connect();
+                        return socket.getDeviceIdentifier();
+                    } catch(IOException e) {
+                        //TODO: log error
+                        e.printStackTrace();
+                        return dev;
+                    }
+                });
+            }
 
             return devices;
         } catch(OncRpcException e) {
@@ -72,10 +90,10 @@ public class VXI11Discovery implements LXIDiscovery {
 
     private static InetAddress getBroadcastAddress(NetworkInterface networkInterface) throws SocketException {
         if (!networkInterface.isUp() || networkInterface.isVirtual()) {
-            throw new IllegalArgumentException("No broadcast address found.");
+            throw new IllegalArgumentException("Network interface unavailable or is virtual.");
         }
         Optional<InterfaceAddress> address = networkInterface.getInterfaceAddresses().stream()
-                .filter(addr -> addr.getBroadcast() != null).findFirst();
+                                                            .filter(addr -> addr.getBroadcast() != null).findFirst();
         return address.orElseThrow(() -> new IllegalArgumentException("No broadcast address found.")).getBroadcast();
     }
 

@@ -30,4 +30,8 @@ public class CreateLinkResponse implements XdrAble {
         maxRecvSize = xdr.xdrDecodeInt();
     }
 
+    public int getLinkId() {
+        return lid.value;
+    }
+
 }

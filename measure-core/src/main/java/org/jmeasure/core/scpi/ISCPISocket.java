@@ -1,6 +1,7 @@
 package org.jmeasure.core.scpi;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.jmeasure.core.device.Connectable;
@@ -25,8 +26,16 @@ public interface ISCPISocket extends Connectable {
     }
 
     default DeviceIdentifier getDeviceIdentifier() throws IOException {
-        this.send(SCPI.idnQuery);
-        return DeviceIdentifier.from(this.receive(DEFAULT_TIMEOUT).get().getRaw());
+        try {
+            this.send(SCPI.idnQuery);
+            DeviceIdentifier dev = DeviceIdentifier.from(this.receive(DEFAULT_TIMEOUT).get().getRaw());
+
+            return dev;
+        } catch(IllegalArgumentException e) {
+            throw new IOException("Cannot resolve device identifier", e);
+        } catch(NoSuchElementException e) {
+            throw new IOException("No device identifier received", e);
+        }
     }
 
     default void reset() throws IOException {
@@ -38,12 +47,12 @@ public interface ISCPISocket extends Connectable {
         this.receive(timeout).orElseThrow(() -> new IOException());
     }
 
-    static String concat(String termination, SCPICommand... commands) {
+    static String concat(char termination, char separator, SCPICommand... commands) {
 		StringBuilder builder = new StringBuilder();
 		for(int i=0;i<commands.length;i++) {
 			builder.append(commands[i].toString());
 			if(i != commands.length - 1) {
-				builder.append(";");
+				builder.append(separator);
 			}
 		}
 		builder.append(termination);

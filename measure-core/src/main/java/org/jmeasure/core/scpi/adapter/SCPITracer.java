@@ -54,7 +54,7 @@ public class SCPITracer extends SCPISocketAdapter {
 
     private void outbound(SCPICommand... commands) {
         try {
-            String out = ISCPISocket.concat("", commands);
+            String out = ISCPISocket.concat(';', ' ', commands);
             this.log(super.getResourceString() + " <- " + truncate(out, 30));
             outbound.write(out.getBytes());
         } catch(IOException e) {
