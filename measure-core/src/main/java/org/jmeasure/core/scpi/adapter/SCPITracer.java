@@ -93,5 +93,10 @@ public class SCPITracer extends SCPISocketAdapter {
         response.ifPresent(this::inbound);
         return response;
     }
+
+    @Override
+    public SCPITracer clone(ISCPISocket socket) {
+        return new SCPITracer(socket, this.consoleEnabled, this.inbound, this.outbound);
+    }
     
 }

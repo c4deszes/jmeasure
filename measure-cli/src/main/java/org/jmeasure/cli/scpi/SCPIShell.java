@@ -2,9 +2,11 @@ package org.jmeasure.cli.scpi;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
 import java.util.List;
 
 import org.jmeasure.core.lxi.raw.RawSocket;
+import org.jmeasure.core.lxi.vxi11.VXI11Socket;
 import org.jmeasure.core.scpi.ISCPISocket;
 import org.jmeasure.core.scpi.SCPICommand;
 import org.jmeasure.core.visa.DeviceIdentifier;
@@ -38,8 +40,9 @@ public class SCPIShell {
 		}
 	}
 
-	@ShellMethod(key = "scpi connect raw", value = "Connects a SCPI device using raw drivers")
-	public String scpiConnect(@ShellOption(value = { "-h", "--host" }) String host,
+	@ShellMethod(key = "scpi connect raw", value = "Connects a SCPI device using a raw TCP/IP socket")
+	public String scpiConnect(
+			@ShellOption(value = { "-h", "--host" }) String host,
 			@ShellOption(value = { "-p", "--port" }) int port) {
 
 		try {
@@ -51,6 +54,25 @@ public class SCPIShell {
 			return "Failed to connect to " + host + ":" + port + ", reason: " + e;
 		}
 	}
+
+	@ShellMethod(key = "scpi connect vxi11", value = "Connects a SCPI device using VXI-11 socket")
+	public String scpiConnectVxi(
+			@ShellOption(value = {"-h", "--host"}) String host,
+			@ShellOption(value = {"-n", "--name"}, defaultValue = "inst0") String name,
+			@ShellOption(value = {"-l", "--lock"}, defaultValue = "0") int lockTimeout,
+			@ShellOption(value = {"-io", "--io-timeout"}, defaultValue = "2000") int ioTimeout,
+			@ShellOption(value = {"-wb", "--write-blocksize"}, defaultValue = "8128") int writeBlockSize) {
+
+			try {
+				VXI11Socket socket = new VXI11Socket(InetAddress.getByName(host), name, lockTimeout > 0, lockTimeout, ioTimeout, writeBlockSize);
+				ISCPISocket dev = scpi.connect(socket);
+
+				return "Connected " + dev.getDeviceIdentifier().getModel() + " via " + socket.toString();
+			} catch(IOException e) {
+				return "Failed to connect to " + host + ", reason: " + e;
+			}
+	}
+
 
 	@ShellMethod(key = "scpi connect mock", value = "Mocks a SCPI device using the given socket")
 	public String scpiConnectMock(@ShellOption(value = { "-c", "--class" }) String className) {

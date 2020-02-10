@@ -9,7 +9,7 @@ import java.io.IOException;
  * 
  * @author Balazs Eszes
  */
-public interface TimeDomainAnalyzer {
+interface TimeDomainAnalyzer {
 
 	/**
 	 * Sets the timebase, including the trigger offset and seconds per division settings

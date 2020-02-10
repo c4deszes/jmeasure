@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import org.jmeasure.core.scpi.ISCPISocket;
 import org.jmeasure.core.scpi.SCPICommand;
 import org.jmeasure.core.visa.DeviceIdentifier;
+import org.jmeasure.core.visa.mock.MockSocket;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,9 +28,12 @@ public abstract class MockSCPISocket implements ISCPISocket {
 
 	private BlockingQueue<SCPICommand> rxStream = new LinkedBlockingQueue<>(10);
 
+	private final MockSocket socket;
+
 	private final DeviceIdentifier idn;
 
-	public MockSCPISocket(DeviceIdentifier idn) {
+	public MockSCPISocket(MockSocket socket, DeviceIdentifier idn) {
+		this.socket = socket;
 		this.idn = idn;
 	}
 
@@ -50,7 +54,7 @@ public abstract class MockSCPISocket implements ISCPISocket {
 
 	@Override
 	public String getResourceString() {
-		return "MOCK::" + this.getClass().getSimpleName() + "::" + (isConnected() ? "ACTIVE" : "INACTIVE");
+		return this.socket.getResourceString();
 	}
 
 	@Override

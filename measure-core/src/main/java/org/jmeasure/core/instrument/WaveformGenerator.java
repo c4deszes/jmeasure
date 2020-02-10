@@ -15,7 +15,7 @@ import java.util.Optional;
  * 
  * @author Balazs Eszes
  */
-public interface WaveformGenerator {
+public interface WaveformGenerator extends AutoCloseable {
 
 	/**
 	 * <b>High impedance mode</b>

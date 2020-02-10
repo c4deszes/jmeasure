@@ -1,5 +1,6 @@
-package org.jmeasure.core.signal.analog;
+package org.jmeasure.core.signal.analog.sampler;
 
+import org.jmeasure.core.signal.analog.AnalogSampler;
 import org.jmeasure.core.signal.analog.AnalogSignal;
 import org.jmeasure.core.signal.Signal;
 

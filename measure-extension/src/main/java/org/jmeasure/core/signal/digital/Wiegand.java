@@ -50,5 +50,9 @@ public class Wiegand extends CompositeSignal<Boolean> {
 		d0.add(time, true);
 		d1.add(time, true);
 	}
+
+	private void generateWiegand26(int code) {
+
+	} 
 	
 }

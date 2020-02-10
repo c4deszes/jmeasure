@@ -66,5 +66,9 @@ public class SCPISocketAdapter implements ISCPISocket {
     public boolean isConnected() {
         return adapter.isConnected();
     }
+
+    public SCPISocketAdapter clone(ISCPISocket socket) {
+        return new SCPISocketAdapter(socket);
+    }
     
 }

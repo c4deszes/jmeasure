@@ -1,5 +1,6 @@
-package org.jmeasure.core.signal.digital;
+package org.jmeasure.core.signal.digital.sampler;
 
+import org.jmeasure.core.signal.digital.BinarySampler;
 import org.jmeasure.core.signal.digital.BinarySignal;
 import org.jmeasure.core.signal.Signal;
 

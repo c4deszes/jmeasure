@@ -5,13 +5,14 @@ import java.net.InetAddress;
 import java.net.SocketOptions;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 import org.acplt.oncrpc.OncRpcClient;
 import org.acplt.oncrpc.OncRpcException;
 import org.acplt.oncrpc.OncRpcProtocols;
 import org.jmeasure.core.device.ISocket;
-import org.jmeasure.core.lxi.vxi11.VXI11.ErrorCode;
 import org.jmeasure.core.lxi.vxi11.rpc.CreateLinkParams;
 import org.jmeasure.core.lxi.vxi11.rpc.CreateLinkResponse;
 import org.jmeasure.core.lxi.vxi11.rpc.DeviceError;
@@ -44,7 +45,7 @@ public class VXI11Socket implements ISocket {
 
     private int ioTimeout;
 
-    private int blocksize;
+    private int writeBlockSize;
 
     private transient OncRpcClient client;
 
@@ -55,7 +56,7 @@ public class VXI11Socket implements ISocket {
     }
 
     public VXI11Socket(final InetAddress host) {
-        this(host, "inst0", false, 0, DEFAULT_IO_TIMEOUT);
+        this(host, null, false, 0, DEFAULT_IO_TIMEOUT);
     }
 
     public VXI11Socket(final InetAddress host, final String name) {
@@ -66,13 +67,18 @@ public class VXI11Socket implements ISocket {
         this(host, name, lock, lockTimeout, ioTimeout, DEFAULT_WRITE_BLOCK_SIZE);
     }
 
-    public VXI11Socket(final InetAddress host, final String name, boolean lock, int lockTimeout, int ioTimeout, int blocksize) {
+    public VXI11Socket(final InetAddress host, final String name, boolean lock, int lockTimeout, int ioTimeout, int writeBlockSize) {
         this.host = host;
         this.name = name;
         this.lock = lock;
         this.lockTimeout = lockTimeout;
         this.ioTimeout = ioTimeout;
-        this.blocksize = blocksize;
+        this.writeBlockSize = writeBlockSize;
+    }
+
+    @Override
+    public Optional<String> getInstrumentName() {
+        return Optional.ofNullable(this.name);
     }
 
     @Override
@@ -135,7 +141,7 @@ public class VXI11Socket implements ISocket {
 
     @Override
     public String getResourceString() {
-        return "TCPIP::" + this.host + "::" + this.name;
+        return "TCPIP::" + this.host + "::" + this.name + "::INSTR";
     }
 
     @Override
@@ -145,11 +151,16 @@ public class VXI11Socket implements ISocket {
         }
         try {
             int offset = 0;
-            while(offset < message.position()) {
-                DeviceWriteResponse response = this.write(link.getLinkId(), ioTimeout, lockTimeout, new DeviceFlags(false, true, false), message.array());
+            int size = message.capacity();
+            byte[] block = new byte[Math.min(size, writeBlockSize)];
+            while(offset < size) {
+                message.get(block, offset, size - offset > writeBlockSize ? writeBlockSize : size);
+                DeviceFlags flags = new DeviceFlags(false, offset + writeBlockSize > size, false);
+                DeviceWriteResponse response = this.write(link.getLinkId(), ioTimeout, lockTimeout, flags, block);
                 if(response.getError() != VXI11.ErrorCode.NO_ERROR) {
                     throw new VXI11Exception(response.getError());
                 }
+                offset += writeBlockSize;
             }
         }  catch(OncRpcException e) {
             throw new IOException(e);
@@ -172,12 +183,21 @@ public class VXI11Socket implements ISocket {
     @Override
     public ByteBuffer receive(char delimiter, long timeout) throws IOException, TimeoutException {
         try {
-            //TODO: receive size
-            DeviceReadResponse response = this.read(link.getLinkId(), SocketOptions.SO_RCVBUF, (int)timeout, lockTimeout, new DeviceFlags(false, false, false), (byte)delimiter);
-            if(response.getError() != VXI11.ErrorCode.NO_ERROR) {
-                throw new IOException("VXI11 Core ERROR: " + ErrorCode.getErrorString(response.getError()));
+            ArrayList<byte[]> buffer = new ArrayList<>();
+            DeviceReadResponse response = null;
+            while(response == null || !response.isEOISet()) {
+                response = this.read(link.getLinkId(), SocketOptions.SO_RCVBUF, (int)timeout, lockTimeout, new DeviceFlags(false, false, false), (byte)delimiter);
+                if(response.getError() != VXI11.ErrorCode.NO_ERROR) {
+                    throw new VXI11Exception(response.getError());
+                }
             }
-            return ByteBuffer.wrap(response.data);
+
+            buffer.add(response.data);
+            int length = buffer.stream().mapToInt(array -> array.length).sum();
+            ByteBuffer data = ByteBuffer.allocate(length);
+            buffer.stream().forEach(data::put);
+
+            return data;
         } 
         catch(OncRpcException e) {
             throw new IOException(e);

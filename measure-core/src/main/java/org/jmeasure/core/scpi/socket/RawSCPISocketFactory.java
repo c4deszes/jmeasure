@@ -2,6 +2,7 @@ package org.jmeasure.core.scpi.socket;
 
 import org.jmeasure.core.device.ISocket;
 import org.jmeasure.core.lxi.raw.RawSocket;
+import org.jmeasure.core.lxi.vxi11.VXI11Socket;
 import org.jmeasure.core.scpi.ISCPISocket;
 import org.jmeasure.core.scpi.factory.ISCPISocketFactory;
 import org.jmeasure.core.serial.SerialSocket;
@@ -13,7 +14,9 @@ public class RawSCPISocketFactory implements ISCPISocketFactory {
 
     @Override
     public boolean supports(ISocket socket) {
-        return (socket instanceof RawSocket) || (socket instanceof SerialSocket);
+        return (socket instanceof RawSocket) || 
+                (socket instanceof SerialSocket) ||
+                (socket instanceof VXI11Socket);
     }
 
     @Override

@@ -1,1 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.jmeasure.spring.configuration.FactoryAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=/
+org.jmeasure.spring.configuration.FactoryAutoConfiguration,/
+org.jmeasure.spring.configuration.ServiceAutoConfiguration

@@ -15,7 +15,7 @@ import org.jmeasure.core.visa.factory.ISocketFactory;
  */
 public class RawSocketFactory implements ISocketFactory {
 
-	private Pattern pattern = Pattern.compile("TCPIP(?<board>[0-9]*)::(?<host>.*)::(?<port>[0-9]{1,5})::SOCKET");
+	private Pattern pattern = Pattern.compile("TCPIP(?<board>[0-9]*)::(?<host>.{1,})::(?<port>[0-9]{1,5})::SOCKET");
 
 	@Override
 	public boolean supports(String connectionInfo) {
@@ -27,8 +27,11 @@ public class RawSocketFactory implements ISocketFactory {
 		Matcher matcher = pattern.matcher(connectionInfo);
 		if(matcher.matches()) {
 			String host = matcher.group("host");
-            int port = Integer.parseInt(matcher.group("port"));
-            int board = Integer.parseInt(matcher.group("board"));
+			int port = Integer.parseInt(matcher.group("port"));
+			int board = 0;
+			if(!matcher.group("board").trim().isEmpty()) {
+				board = Integer.parseInt(matcher.group("board"));
+			}
 			return new RawSocket(host, port, board);
 		}
 		throw new IllegalArgumentException(connectionInfo + " doesn't match " + pattern.pattern());

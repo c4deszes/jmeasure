@@ -12,7 +12,7 @@ import java.io.IOException;
  * 
  * @author Balazs Eszes
  */
-public interface DCPowerSupply {
+public interface DCPowerSupply extends AutoCloseable {
 
 	/**
 	 * Returns the number of power outputs

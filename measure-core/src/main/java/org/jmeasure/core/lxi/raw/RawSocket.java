@@ -25,7 +25,7 @@ public class RawSocket implements ISocket {
     @Getter
     private final int board;
 
-    private Socket socket;
+    private transient Socket socket;
 
     public RawSocket(String host, int port) {
         this(host, port, 0);

@@ -72,7 +72,7 @@ public class MockSCPISocketTest {
     public static class TestDevice extends MockSCPISocket {
 
         public TestDevice() {
-            super(DeviceIdentifier.from("Test", "DEV1", "ABC123", "1.0.0"));
+            super(null, DeviceIdentifier.from("Test", "DEV1", "ABC123", "1.0.0"));
         }
 
         @OnCommand("BASIC\\?")

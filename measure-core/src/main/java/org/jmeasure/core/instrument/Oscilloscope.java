@@ -11,7 +11,7 @@ import java.util.Optional;
  * 
  * @author Balazs Eszes
  */
-public interface Oscilloscope extends TimeDomainAnalyzer {
+public interface Oscilloscope extends TimeDomainAnalyzer, AutoCloseable {
 
 	/**
 	 * Returns the number of available analog channels

@@ -8,16 +8,40 @@ import org.jmeasure.core.device.Connectable;
 import org.jmeasure.core.visa.DeviceIdentifier;
 
 /**
- * ISCPISocket
+ * ISCPISocket is able to send and receive SCPI commands
  */
 public interface ISCPISocket extends Connectable {
 
     public final static long DEFAULT_TIMEOUT = 1000;
 
+    /**
+     * Sends SCPI commands to the device, how they're being sent is up to the socket implementation
+     * <p>
+     * The operation should be atomic, so either all commands should succeed or the device's state shall not change
+     * 
+     * @param commands SCPI commands to send
+     * @throws IOException if 
+     */
     public void send(SCPICommand... commands) throws IOException;
 
+    /**
+     * Receives a SCPI response from the device
+     * <p>
+     * The operation has to return {@code Optional.empty()} if the method timed out with no response
+     * 
+     * @param timeout Time to wait for a response, if 0 then wait indefinitely
+     * @return Optional of SCPICommand, empty if the device didn't respond
+     * @throws IOException If the 
+     */
     public Optional<SCPICommand> receive(long timeout) throws IOException;
 
+    /**
+     * 
+     * @param count
+     * @param timeout
+     * @return
+     * @throws IOException
+     */
     Optional<String> receive(int count, long timeout) throws IOException;
 
     default Optional<SCPICommand> query(SCPICommand command, long timeout) throws IOException {
@@ -40,6 +64,10 @@ public interface ISCPISocket extends Connectable {
 
     default void reset() throws IOException {
         this.send(SCPI.resetDevice);
+    }
+
+    default void clearStatus() throws IOException {
+        this.send(SCPI.clearStatus);
     }
 
     default void waitForOperation(long timeout) throws IOException {

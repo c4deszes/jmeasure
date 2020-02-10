@@ -51,7 +51,7 @@ public class SCPIAdapterTest {
     static class TestDevice extends MockSCPISocket {
 
         public TestDevice() {
-            super(DeviceIdentifier.from("Test", "T00", "ABC123", "1.0"));
+            super(null, DeviceIdentifier.from("Test", "T00", "ABC123", "1.0"));
         }
 
         @Override

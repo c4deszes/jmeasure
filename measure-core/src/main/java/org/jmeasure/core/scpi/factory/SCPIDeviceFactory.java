@@ -29,31 +29,24 @@ public class SCPIDeviceFactory {
 	@Setter
 	private long timeout = 1000;
 
-	private final SocketFactory socketFactory;
-
 	private final SCPISocketFactory scpiFactory;
 
 	private final List<ISCPIDeviceFactory> factories;
 
-	public SCPIDeviceFactory(final SocketFactory socketFactory, final SCPISocketFactory scpiFactory,ISCPIDeviceFactory... factories) {
-		this(socketFactory, scpiFactory, Arrays.asList(factories));
+	public SCPIDeviceFactory(final SCPISocketFactory scpiFactory, ISCPIDeviceFactory... factories) {
+		this(scpiFactory, Arrays.asList(factories));
 	}
 
-	public SCPIDeviceFactory(final SocketFactory socketFactory, final SCPISocketFactory scpiFactory, List<ISCPIDeviceFactory> factories) {
-		this.socketFactory = socketFactory;
+	public SCPIDeviceFactory(final SCPISocketFactory scpiFactory, List<ISCPIDeviceFactory> factories) {
 		this.scpiFactory = scpiFactory;
 		this.factories = new LinkedList<>(factories);
-	}
-
-	public ISCPISocket create(String resourceURI) throws IOException {
-		return this.create(socketFactory.create(resourceURI));
 	}
 
 	public ISCPISocket create(ISocket socket) throws IOException {
 		return this.create(scpiFactory.create(socket));
 	}
 
-	@SuppressWarnings("resource")
+	//@SuppressWarnings("resource")
 	public ISCPISocket create(ISCPISocket socket) throws IOException {
 		socket.connect();
 		socket.send(SCPI.idnQuery);

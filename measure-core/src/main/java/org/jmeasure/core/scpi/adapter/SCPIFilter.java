@@ -10,12 +10,17 @@ import org.jmeasure.core.scpi.SCPICommand;
 import org.jmeasure.core.scpi.SCPISocketAdapter;
 
 /**
- * SCPIFilter
+ * SCPIFilter is used to block certain commands from being sent to the device
  */
 public class SCPIFilter extends SCPISocketAdapter {
 
-    private Predicate<SCPICommand> allow;
+    private final Predicate<SCPICommand> allow;
 
+    /**
+     * Constructs a new SCPI filter using a socket and a filter predicate
+     * @param adapter SCPI socket to pass call to
+     * @param allow A predicate for allowing commands, returns {@code true} if the command is allowed
+     */
     public SCPIFilter(ISCPISocket adapter, Predicate<SCPICommand> allow) {
         super(adapter);
         this.allow = allow;
@@ -28,6 +33,11 @@ public class SCPIFilter extends SCPISocketAdapter {
         SCPICommand[] out = new SCPICommand[filtered.size()];
         out = filtered.toArray(out);
         super.send(out);
+    }
+
+    @Override
+    public SCPIFilter clone(ISCPISocket socket) {
+        return new SCPIFilter(socket, this.allow);
     }
     
 }

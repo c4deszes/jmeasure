@@ -5,6 +5,7 @@ import org.jmeasure.core.scpi.mock.MockSCPISocket;
 import org.jmeasure.core.scpi.mock.OnCommand;
 import org.jmeasure.core.util.Units;
 import org.jmeasure.core.visa.DeviceIdentifier;
+import org.jmeasure.core.visa.mock.MockSocket;
 
 /**
  * MockWaveformGenerator
@@ -13,8 +14,8 @@ public class MockSDG1000X extends MockSCPISocket {
 
 	private float freq;
 
-	public MockSDG1000X(DeviceIdentifier deviceIdentifier) {
-		super(deviceIdentifier);
+	public MockSDG1000X(MockSocket socket, DeviceIdentifier deviceIdentifier) {
+		super(socket, deviceIdentifier);
 
 		this.onReset();
 	}

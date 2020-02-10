@@ -15,32 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 @Configuration
-public class FactoryAutoConfiguration {
-
-	@Bean
-	@ConditionalOnClass(SiglentDeviceFactory.class)
-	public ISCPIDeviceFactory siglent() {
-		return new SiglentDeviceFactory();
-	}
+public class SocketFactoryAutoConfiguration {
 
 	@Bean
 	public ISocketFactory rawSocket() {
 		return new RawSocketFactory();
-	}
-
-	@Bean
-	public ISCPISocketFactory rawSCPISocketFactory() {
-		return new RawSCPISocketFactory();
-	}
-
-	@Bean
-	public SCPIDeviceFactory deviceFactory(
-		@Autowired(required = false) SocketFactory socketFactory,
-		@Autowired(required = false) SCPISocketFactory scpiFactory, 
-		List<ISCPIDeviceFactory> factories) {
-		return new SCPIDeviceFactory(socketFactory, scpiFactory, factories);
 	}
 
 	@Bean

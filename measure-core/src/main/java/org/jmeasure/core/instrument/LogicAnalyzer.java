@@ -10,7 +10,7 @@ import java.util.Optional;
  * 
  * @author Balazs Eszes
  */
-public interface LogicAnalyzer extends TimeDomainAnalyzer {
+public interface LogicAnalyzer extends TimeDomainAnalyzer, AutoCloseable {
 
 	public final static float TTL = 1.5f;
 

@@ -9,6 +9,8 @@ import org.jmeasure.core.lxi.vxi11.VXI11.ErrorCode;
  */
 public class VXI11Exception extends IOException {
 
+    private static final long serialVersionUID = 9011406167109584636L;
+
     public VXI11Exception() {
     }
 

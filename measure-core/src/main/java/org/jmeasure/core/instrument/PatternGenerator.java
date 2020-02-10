@@ -10,7 +10,7 @@ import java.io.IOException;
  * 
  * @author Balazs Eszes
  */
-public interface PatternGenerator {
+public interface PatternGenerator extends AutoCloseable {
 
 	public static final DigitalOutputConfiguration CMOS_5V = DigitalOutputConfiguration.builder().enabled().high(5.0f).low(0.0f);
 

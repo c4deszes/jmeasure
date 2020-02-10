@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.jmeasure.core.device.ISocket;
 import org.jmeasure.core.scpi.ISCPISocket;
+import org.jmeasure.core.visa.UnsupportedSocketException;
 
 /**
  * SCPISocketFactory
@@ -15,12 +16,12 @@ public class SCPISocketFactory implements ISCPISocketFactory {
     private List<ISCPISocketFactory> factories;
 
     public SCPISocketFactory(ISCPISocketFactory... factories) {
-		this(Arrays.asList(factories));
-	}
+        this(Arrays.asList(factories));
+    }
 
-	public SCPISocketFactory(List<ISCPISocketFactory> factories) {
-		this.factories = new LinkedList<>(factories);
-	}
+    public SCPISocketFactory(List<ISCPISocketFactory> factories) {
+        this.factories = new LinkedList<>(factories);
+    }
 
     @Override
     public boolean supports(ISocket socket) {
@@ -28,7 +29,7 @@ public class SCPISocketFactory implements ISCPISocketFactory {
     }
 
     @Override
-    public ISCPISocket create(ISocket socket) {
+    public ISCPISocket create(ISocket socket) throws UnsupportedSocketException {
         for(ISCPISocketFactory factory : factories) {
             if(factory.supports(socket)) {
                 return factory.create(socket);
