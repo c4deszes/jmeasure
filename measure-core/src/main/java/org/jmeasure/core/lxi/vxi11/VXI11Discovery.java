@@ -23,12 +23,17 @@ import org.jmeasure.core.lxi.vxi11.portmap.PortmapResponse;
 import org.jmeasure.core.scpi.socket.RawSCPISocket;
 import org.jmeasure.core.visa.DeviceIdentifier;
 
-/**
- * LXIDiscovery
- */
-public class VXI11Discovery implements LXIDiscovery {
+import lombok.extern.slf4j.Slf4j;
 
-    private final static int DEFAULT_TIMEOUT = 1000;
+/**
+ * VXI11Discovery implements RPC based instrument discovery
+ * 
+ * <p>
+ * This implementation broadcasts RPC Portmap queries over UDP.
+ * The portmap parameters specifically look for the existence of the VXI-11 Device Core program over TCP.
+ */
+@Slf4j
+public class VXI11Discovery implements LXIDiscovery {
 
     private int timeout;
 
@@ -36,10 +41,26 @@ public class VXI11Discovery implements LXIDiscovery {
 
     private int retransmissions;
 
+    /**
+     * Constructs a new VXI-11 discovery tool using the default parameters, which are:
+     * <ul>
+     * <li>
+     * 1 second timeout (as stated in the LXI specification)
+     * <li>
+     * Automatically resolve device identifiers
+     * <li>
+     * Retransmit 1 time
+     */
     public VXI11Discovery() {
-        this(DEFAULT_TIMEOUT, true, 0);
+        this(1000, true, 1);
     }
 
+    /**
+     * Constructs a new VXI-11 discovery using the given parameters
+     * @param timeout Time to wait for responses
+     * @param resolveDeviceInfo if {@code true} then for every response it will try to do an *IDN? query
+     * @param retransmissions The number of retranmissions
+     */
     public VXI11Discovery(int timeout, boolean resolveDeviceInfo, int retransmissions) {
         this.timeout = timeout;
         this.resolveDeviceInfo = resolveDeviceInfo;
@@ -70,11 +91,9 @@ public class VXI11Discovery implements LXIDiscovery {
             if(resolveDeviceInfo) {
                 devices.replaceAll((ip, dev) -> {
                     try(RawSCPISocket socket = new RawSCPISocket(new VXI11Socket(ip))) {
-                        socket.connect();
                         return socket.getDeviceIdentifier();
                     } catch(IOException e) {
-                        //TODO: log error
-                        e.printStackTrace();
+                        log.warn("Failed to resolve device identifier of " + ip);
                         return dev;
                     }
                 });
@@ -88,6 +107,12 @@ public class VXI11Discovery implements LXIDiscovery {
         }
     }
 
+    /**
+     * Returns a broadcast address for the given network interface
+     * @param networkInterface Network interface
+     * @return Broadcast IP Address
+     * @throws SocketException If the network interface is unavailable
+     */
     private static InetAddress getBroadcastAddress(NetworkInterface networkInterface) throws SocketException {
         if (!networkInterface.isUp() || networkInterface.isVirtual()) {
             throw new IllegalArgumentException("Network interface unavailable or is virtual.");

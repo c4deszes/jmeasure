@@ -67,7 +67,7 @@ public class SerialSocket implements ISocket {
     }
 
     @Override
-    public void disconnect() {
+    public void close() {
         try {
             socket.close();
         } catch (NullPointerException | IOException e) {}
@@ -76,6 +76,11 @@ public class SerialSocket implements ISocket {
     @Override
     public boolean isConnected() {
         return this.socket != null && !socket.isClosed();
+    }
+
+    @Override
+    public String getInstrumentName() {
+        return null;
     }
 
     @Override

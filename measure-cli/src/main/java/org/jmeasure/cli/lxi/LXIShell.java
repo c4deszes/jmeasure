@@ -1,11 +1,14 @@
 package org.jmeasure.cli.lxi;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jmeasure.core.lxi.LXIDiscovery;
 import org.jmeasure.core.lxi.mdns.MDNSDiscovery;
 import org.jmeasure.core.lxi.vxi11.VXI11Discovery;
 import org.jmeasure.core.visa.DeviceIdentifier;
@@ -18,12 +21,14 @@ import org.springframework.shell.standard.ShellOption;
 @ShellCommandGroup("LXI")
 public class LXIShell {
 
-    @ShellMethod(key = "lxi discover", value = "Finds LXI instruments on the network")
+    /*
+    @ShellMethod(key = "lxi-discover", value = "Finds LXI instruments on the network")
     public String lxiDiscover(
-        @ShellOption(value = {"-i", "--interface"}, defaultValue = "all", help = "Network interface to broadcast on") String networkInterface,
-        @ShellOption(value = {"-p", "--protocol"}, defaultValue = ShellOption.NULL, help = "Discovery protocol (VXI-11 or mDNS)") DiscoveryProtocol protocol,
-        @ShellOption(value = {"-t", "--timeout"}, defaultValue = "1000", help = "Time to wait for responses") int timeout,
-        @ShellOption(value = {"-x", "--no-resolve"}, defaultValue = "false", help = "Disables automatic device identifier resolution") boolean noResolve) {
+            @ShellOption(value = { "-i", " --interface" }, defaultValue = "all", help = "Network interface to broadcast on") String networkInterface,
+            @ShellOption(value = { "-p", "--protocol" }, defaultValue = ShellOption.NULL, help = "Discovery protocol (VXI-11 or mDNS)") DiscoveryProtocol protocol,
+            @ShellOption(value = { "-t", "--timeout" }, defaultValue = "1000", help = "Time to wait for responses") int timeout,
+            @ShellOption(value = { "-x", "--no-resolve" }, defaultValue = "false", help = "Disables automatic device identifier resolution") boolean noResolve)
+            throws SocketException {
         
         Map<InetAddress, DeviceIdentifier> devices = new HashMap<>();
 
@@ -33,34 +38,40 @@ public class LXIShell {
         if(networkInterface.equals("all")) {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while(interfaces.hasMoreElements()) {
-                NetworkInterface ni = interfaces.nextElement();
-                if(protocol == DiscoveryProtocol.VXI11) {
-                    devices.putAll(vxi11.discover(ni));
-                } else if(protocol == DiscoveryProtocol.mDNS) {
-                    devices.putAll(mdns.discover(ni));
-                } else if(protocol == null) {
-                    devices.putAll(vxi11.discover(ni));
-                    devices.putAll(mdns.discover(ni));
+                try {
+                    NetworkInterface ni = interfaces.nextElement();
+                    if(protocol == DiscoveryProtocol.VXI11) {
+                        devices.putAll(vxi11.discover(ni));
+                    } else if(protocol == DiscoveryProtocol.mDNS) {
+                        devices.putAll(mdns.discover(ni));
+                    } else if(protocol == null) {
+                        devices.putAll(vxi11.discover(ni));
+                        devices.putAll(mdns.discover(ni));
+                    }
+                } catch(IOException e) {
+                    
                 }
             }
         }
         else {
-            //discover(discovery, NetworkInterface.getByName(networkInterface), devices);
+            NetworkInterface ni = NetworkInterface.getByName(networkInterface);
+            if(protocol == DiscoveryProtocol.VXI11) {
+                devices.putAll(vxi11.discover(ni));
+            } else if(protocol == DiscoveryProtocol.mDNS) {
+                devices.putAll(mdns.discover(ni));
+            } else if(protocol == null) {
+                devices.putAll(vxi11.discover(ni));
+                devices.putAll(mdns.discover(ni));
+            }
         }
 
         return toTable(devices);
     }
 
-    private Map<InetAddress, DeviceIdentifier> discover(DiscoveryProtocol protocol, NetworkInterface networkInterface) {
+    private Map<InetAddress, DeviceIdentifier> discover(LXIDiscovery discoveryTool, NetworkInterface networkInterface)
+            throws IOException {
         Map<InetAddress, DeviceIdentifier> devices = new HashMap<>();
-        if(protocol == DiscoveryProtocol.VXI11) {
-            devices.putAll(vxi11.discover(ni));
-        } else if(protocol == DiscoveryProtocol.mDNS) {
-            devices.putAll(mdns.discover(ni));
-        } else if(protocol == null) {
-            devices.putAll(vxi11.discover(ni));
-            devices.putAll(mdns.discover(ni));
-        }
+        devices.putAll(discoveryTool.discover(networkInterface));
         return devices;
     }
 
@@ -83,4 +94,5 @@ public class LXIShell {
     private static enum DiscoveryProtocol {
         mDNS, VXI11
     }
+    */
 }

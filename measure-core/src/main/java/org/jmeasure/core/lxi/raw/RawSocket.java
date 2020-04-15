@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
 import org.jmeasure.core.device.ISocket;
@@ -12,7 +13,7 @@ import org.jmeasure.core.device.ISocket;
 import lombok.Getter;
 
 /**
- * RawSocket
+ * RawSocket implements a generic TCP/IP socket for sending and receiving byte streams
  */
 public class RawSocket implements ISocket {
 
@@ -27,19 +28,52 @@ public class RawSocket implements ISocket {
 
     private transient Socket socket;
 
-    public RawSocket(String host, int port) {
+    /**
+     * Constructs a RawSocket, board number defaults to 0
+     * 
+     * @param host Hostname or IP address
+     * @param port Port number, 0-65535
+     * @throws IOException if the connection failed
+     */
+    public RawSocket(String host, int port) throws IOException {
         this(host, port, 0);
     }
 
-    public RawSocket(String host, int port, int board) {
+    /**
+     * Constructs a RawSocket
+     * 
+     * @param host Hostname or IP address
+     * @param port Port number, 0-65535
+     * @param board Board number
+     * @throws IOException if the connection failed
+     */
+    public RawSocket(String host, int port, int board) throws IOException {
+        if(port > 65535 || port < 0) {
+            throw new IllegalArgumentException("TCP Port number must be 0-65535: " + port);
+        }
+        if(board < 0) {
+            throw new IllegalArgumentException("Board number must be positive: " + board);
+        }
         this.host = host;
         this.port = port;
         this.board = board;
+
+        this.connect();
+    }
+
+    @Override
+    public String getInstrumentName() {
+        return null;
     }
 
     @Override
     public String getResourceString() {
         return String.format("TCP%d::%s::%d::SOCKET", board, host, port);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("RawSocket[host=%s, port=%d, board=%d]", host, port, board);
     }
 
     @Override
@@ -68,10 +102,11 @@ public class RawSocket implements ISocket {
                 output.put((byte) socket.getInputStream().read());
             }
             return output;
-        } catch(SocketException e) {
-            throw new IOException(e);
         } catch(SocketTimeoutException e) {
             throw new TimeoutException(e.getMessage());
+        } catch(IOException e) {
+            this.socket = null;
+            throw e;
         }
     }
 
@@ -95,15 +130,30 @@ public class RawSocket implements ISocket {
     }
 
     @Override
-    public void disconnect() {
+    public void close() {
         try {
             socket.close();
-        } catch (IOException | NullPointerException e) {}
+        } catch (IOException | NullPointerException e) {
+
+        } finally {
+            socket = null;
+        }
     }
 
     @Override
     public boolean isConnected() {
-        return !socket.isClosed();
+        return socket != null && !socket.isClosed();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof RawSocket) {
+            RawSocket other = (RawSocket) obj;
+            return Objects.equals(this.host, other.host) 
+                    && Objects.equals(this.port, other.port)
+                    && Objects.equals(this.board, other.board);
+        }
+        return false;
     }
     
 }

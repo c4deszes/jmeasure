@@ -35,7 +35,7 @@ public class SCPISocketFactory implements ISCPISocketFactory {
                 return factory.create(socket);
             }
         }
-        throw new IllegalArgumentException();
+        throw new UnsupportedSocketException();
     }
     
 }

@@ -28,6 +28,8 @@ public class MockSocket implements ISocket {
     public MockSocket(String className, String instrumentName) {
         this.className = className;
         this.instrumentName = instrumentName;
+
+        this.connect();
     }
 
     @Override
@@ -36,7 +38,7 @@ public class MockSocket implements ISocket {
     }
 
     @Override
-    public void disconnect() {
+    public void close() {
         this.connected = false;
     }
 
@@ -47,26 +49,34 @@ public class MockSocket implements ISocket {
 
     @Override
     public String getResourceString() {
-        return "MOCK::" + className + "::" + instrumentName + "::INSTR";
+        return "MOCK::" + className + (instrumentName != null ? "::" + instrumentName: "") + "::INSTR";
     }
 
     @Override
-    public Optional<String> getInstrumentName() {
-        return Optional.ofNullable(this.instrumentName);
+    public String getInstrumentName() {
+        return this.instrumentName;
     }
 
     @Override
     public void send(ByteBuffer message) throws IOException {
-        
+        if(!this.connected) {
+            throw new IOException("MockSocket not connected");
+        }
     }
 
     @Override
     public ByteBuffer receive(int count, long timeout) throws IOException, TimeoutException {
+        if(!this.connected) {
+            throw new IOException("MockSocket not connected");
+        }
         return ByteBuffer.allocate(0);
     }
 
     @Override
     public ByteBuffer receive(char delimiter, long timeout) throws IOException, TimeoutException {
+        if(!this.connected) {
+            throw new IOException("MockSocket not connected");
+        }
         return ByteBuffer.allocate(0);
     }
     

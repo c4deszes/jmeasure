@@ -3,6 +3,7 @@ package org.jmeasure.core.serial;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jmeasure.core.visa.factory.ISocketFactory;
+import org.jmeasure.core.visa.factory.InstrumentNameProvider;
 
 /**
  * SerialSocketFactory
@@ -17,7 +18,7 @@ public class SerialSocketFactory implements ISocketFactory {
 	}
 
 	@Override
-	public SerialSocket create(String connectionInfo) {
+	public SerialSocket create(String connectionInfo, InstrumentNameProvider nameProvider) {
 		Matcher matcher = pattern.matcher(connectionInfo);
 		if(matcher.matches()) {
 			int port = Integer.parseInt(matcher.group("port"));

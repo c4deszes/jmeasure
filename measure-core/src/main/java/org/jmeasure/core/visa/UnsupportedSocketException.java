@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * UnsupportedSocketException
  */
-public class UnsupportedSocketException extends IOException {
+public class UnsupportedSocketException extends Exception {
 
 	private static final long serialVersionUID = -7900104889511905613L;
 

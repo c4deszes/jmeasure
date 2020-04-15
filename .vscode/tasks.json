@@ -12,7 +12,7 @@
 		{
 			"label": "test",
 			"type": "shell",
-			"command": "mvn -B test",
+			"command": "./mvnw -B test",
 			"group": "test"
 		}
 	]

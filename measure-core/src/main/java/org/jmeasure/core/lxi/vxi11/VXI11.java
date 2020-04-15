@@ -3,15 +3,23 @@ package org.jmeasure.core.lxi.vxi11;
 import java.lang.reflect.Field;
 
 /**
- * VXI11
+ * VXI-11 contains constants specified in the VXI-11 standard, these include:
+ * <ul>
+ * <li>
+ * Program identifiers
+ * <li>
+ * Procedure numbers
+ * <li>
+ * Error codes
  */
 public class VXI11 {
 
+    /**
+     * Device core functionality
+     */
     public static class DeviceCore {
         public final static int PROGRAM = 0x0607AF;
         public final static int VERSION = 1;
-
-        //public final static int GETPORT = 3;
 
         public final static int CREATE_LINK = 10;
         public final static int DEVICE_WRITE = 11;
@@ -30,6 +38,9 @@ public class VXI11 {
         public final static int DESTROY_INTR_CHANNEL = 26;
     }
 
+    /**
+     * Interrupt functionality (optional)
+     */
     public static class DeviceInterrupt {
         public final static int PROGRAM = 0x0607B1;
         public final static int VERSION = 1;
@@ -37,6 +48,9 @@ public class VXI11 {
         public final static int DEVICE_INTR_SRQ = 30;
     }
 
+    /**
+     * Asynchronous functionality (optional)
+     */
     public static class DeviceAsync {
         public final static int PROGRAM = 0x0607B0;
         public final static int VERSION = 1;
@@ -45,6 +59,9 @@ public class VXI11 {
     }
 
     /**
+     * Error codes
+     * 
+     * <p>
      * Found in VXI-11 Rev 1.0 specification Table B.2
      */
     public static class ErrorCode {
@@ -64,6 +81,11 @@ public class VXI11 {
         public final static int ABORT = 23;
         public final static int CHANNEL_ALREADY_ESTABLISHED = 29;
 
+        /**
+         * Returns the name of the error for the given code
+         * @param code Error code
+         * @return Error name
+         */
         public static String getErrorName(int code) {
             try {
                 for(Field field : ErrorCode.class.getFields()) {
@@ -77,6 +99,11 @@ public class VXI11 {
             }
         }
 
+        /**
+         * Returns an error string consisting of the error name and error code
+         * @param code Error code
+         * @return Error string in the format <i>'NAME (CODE)'</i>
+         */
         public static String getErrorString(int code) {
             return getErrorName(code) + " (" + code + ")";
         }

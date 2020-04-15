@@ -16,10 +16,10 @@ public final class DeviceIdentifier {
 
 	public final static DeviceIdentifier UNKNOWN = new DeviceIdentifier("-", "-", "-", "-");
 
-	private String manufacturer;
-	private String model;
-	private String serialNumber;
-	private String firmwareVersion;
+	private final String manufacturer;
+	private final String model;
+	private final String serialNumber;
+	private final String firmwareVersion;
 
 	/**
 	 * Constructs an Identifier from the format seen in the LXI Discovery and Identification specification

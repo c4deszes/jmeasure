@@ -19,10 +19,10 @@ public class SiglentDeviceFactory implements ISCPIDeviceFactory {
 	}
 
 	@Override
-	public ISCPISocket create(ISCPISocket socket, DeviceIdentifier info) throws UnsupportedDeviceException, IOException {
+	public ISCPISocket create(ISCPISocket socket) throws UnsupportedDeviceException, IOException {
 		try {
-			Class<? extends ISCPISocket> klass = lookupModel(info.getModel());
-			return klass.getConstructor(ISCPISocket.class, DeviceIdentifier.class).newInstance(socket, info);
+			Class<? extends ISCPISocket> klass = lookupModel(socket.getDeviceIdentifier().getModel());
+			return klass.getConstructor(ISCPISocket.class, DeviceIdentifier.class).newInstance(socket, socket.getDeviceIdentifier());
 		} catch(Exception e) {
 			if(e.getCause() instanceof IOException) {
 				throw (IOException) e.getCause();

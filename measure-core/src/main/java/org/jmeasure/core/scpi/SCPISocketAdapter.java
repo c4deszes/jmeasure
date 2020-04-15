@@ -38,7 +38,7 @@ public class SCPISocketAdapter implements ISCPISocket {
     }
 
     @Override
-    public Optional<SCPICommand> receive(long timeout) throws IOException {
+    public Optional<String> receive(long timeout) throws IOException {
         return adapter.receive(timeout);
     }
 
@@ -58,8 +58,8 @@ public class SCPISocketAdapter implements ISCPISocket {
     }
 
     @Override
-    public void disconnect() {
-        adapter.disconnect();
+    public void close() {
+        adapter.close();
     }
 
     @Override

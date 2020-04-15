@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.jmeasure.core.scpi.ISCPISocket;
 import org.jmeasure.core.scpi.SCPICommand;
@@ -19,14 +20,14 @@ import org.jmeasure.core.visa.mock.MockSocket;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * MockSCPIDevice
+ * MockSCPISocket is used to emulate a SCPI interpreting device
+ * 
+ * 
  */
 @Slf4j
 public abstract class MockSCPISocket implements ISCPISocket {
 
-	private boolean connected = false;
-
-	private BlockingQueue<SCPICommand> rxStream = new LinkedBlockingQueue<>(10);
+	private BlockingQueue<String> rxStream = new LinkedBlockingQueue<>(10);
 
 	private final MockSocket socket;
 
@@ -39,17 +40,17 @@ public abstract class MockSCPISocket implements ISCPISocket {
 
 	@Override
 	public final void connect() throws IOException {
-		this.connected = true;
+		this.socket.connect();
 	}
 
 	@Override
-	public final void disconnect() {
-		this.connected = false;
+	public final void close() {
+		this.socket.close();
 	}
 
 	@Override
 	public final boolean isConnected() {
-		return this.connected;
+		return this.socket.isConnected();
 	}
 
 	@Override
@@ -117,11 +118,11 @@ public abstract class MockSCPISocket implements ISCPISocket {
 	 * @param object
 	 * @return
 	 */
-	private SCPICommand resolveReturnType(Object object) {
+	private String resolveReturnType(Object object) {
 		if (object instanceof SCPICommand) {
-			return (SCPICommand) object;
+			return ((SCPICommand) object).getRaw();
 		} else if (object instanceof String) {
-			return new SCPICommand((String) object);
+			return (String) object;
 		}
 		return null;
 	}
@@ -131,11 +132,11 @@ public abstract class MockSCPISocket implements ISCPISocket {
 			Object[] arguments = resolve(matcher, method, command);
 			Object ret = method.invoke(this, arguments);
 
-			SCPICommand response = resolveReturnType(ret);
-			if(response != null) {
+			String response = resolveReturnType(ret);
+			if (response != null) {
 				this.pushResponse(response);
 			}
-		} catch(IllegalAccessException | IllegalArgumentException e) {
+		} catch (IllegalAccessException | IllegalArgumentException e) {
 			log.warn("Failed to invoke callback", e);
 		}
 	}
@@ -165,7 +166,7 @@ public abstract class MockSCPISocket implements ISCPISocket {
 	 * 
 	 * @param response SCPI response
 	 */
-	protected final void pushResponse(SCPICommand response) {
+	protected final void pushResponse(String response) {
 		rxStream.offer(response);
 	}
 
@@ -203,26 +204,28 @@ public abstract class MockSCPISocket implements ISCPISocket {
 
 	@Override
 	public final void send(SCPICommand... commands) throws IOException {
-		if(!isConnected()) {
+		if (!isConnected()) {
 			throw new IOException("Device not connected.");
 		}
+		//TODO: parallel calls, or randomize order
+		//Stream.of(commands).parallel().peek(command -> {
 		for(SCPICommand command: commands) {
 			try {
-				this.onReceive(command);
-			} catch(Exception e) {
-				//TODO: suppress exception
+				onReceive(command);
+			} catch (Exception e) {
 				throw new IOException(e);
 			}
 		}
+		//});
 	}
 
 	@Override
-	public final Optional<SCPICommand> receive(long timeout) throws IOException {
+	public final Optional<String> receive(long timeout) throws IOException {
 		try {
 			if(!isConnected()) {
 				throw new IOException("Device not connected.");
 			}
-			SCPICommand response = timeout == 0 ? rxStream.take() : rxStream.poll(timeout, TimeUnit.MILLISECONDS);
+			String response = timeout == 0 ? rxStream.take() : rxStream.poll(timeout, TimeUnit.MILLISECONDS);
 			return Optional.ofNullable(response);
 		} catch(InterruptedException e) {
 			throw new IOException();

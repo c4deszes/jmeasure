@@ -51,34 +51,32 @@ public class VXI11Socket implements ISocket {
 
     private transient CreateLinkResponse link;
 
-    public VXI11Socket(final String host) throws UnknownHostException {
+    public VXI11Socket(final String host) throws IOException {
         this(InetAddress.getByName(host));
     }
 
-    public VXI11Socket(final InetAddress host) {
-        this(host, null, false, 0, DEFAULT_IO_TIMEOUT);
+    public VXI11Socket(final InetAddress host) throws IOException {
+        this(host, null);
     }
 
-    public VXI11Socket(final InetAddress host, final String name) {
+    public VXI11Socket(final InetAddress host, final String name) throws IOException {
         this(host, name, false, 0, DEFAULT_IO_TIMEOUT, DEFAULT_WRITE_BLOCK_SIZE);
     }
 
-    public VXI11Socket(final InetAddress host, final String name, boolean lock, int lockTimeout, int ioTimeout) {
-        this(host, name, lock, lockTimeout, ioTimeout, DEFAULT_WRITE_BLOCK_SIZE);
-    }
-
-    public VXI11Socket(final InetAddress host, final String name, boolean lock, int lockTimeout, int ioTimeout, int writeBlockSize) {
+    public VXI11Socket(final InetAddress host, final String name, boolean lock, int lockTimeout, int ioTimeout, int writeBlockSize) throws IOException {
         this.host = host;
         this.name = name;
         this.lock = lock;
         this.lockTimeout = lockTimeout;
         this.ioTimeout = ioTimeout;
         this.writeBlockSize = writeBlockSize;
+
+        this.connect();
     }
 
     @Override
-    public Optional<String> getInstrumentName() {
-        return Optional.ofNullable(this.name);
+    public String getInstrumentName() {
+        return this.name;
     }
 
     @Override
@@ -123,7 +121,7 @@ public class VXI11Socket implements ISocket {
     }
 
     @Override
-    public void disconnect() {
+    public void close() {
         try {
             destroyLink(link.getLinkId());
             client.close();

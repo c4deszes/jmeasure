@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.jmeasure.core.scpi.adapter.SCPIFilter;
 import org.jmeasure.core.scpi.mock.MockSCPISocket;
 import org.jmeasure.core.visa.DeviceIdentifier;
+import org.jmeasure.core.visa.mock.MockSocket;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -17,7 +18,7 @@ public class SCPIAdapterTest {
 
     @Test
     public void testFilterAllowEverything() throws IOException {
-        ISCPISocket filter = new SCPIFilter(new TestDevice(), command -> {
+        ISCPISocket filter = new SCPIFilter(new TestSCPISocket(), command -> {
             return true;
         });
         filter.connect();
@@ -27,7 +28,7 @@ public class SCPIAdapterTest {
 
     @Test(expected = IOException.class)
     public void testFilterAllowIllegalCall() throws IOException {
-        ISCPISocket filter = new SCPIFilter(new TestDevice(), command -> {
+        ISCPISocket filter = new SCPIFilter(new TestSCPISocket(), command -> {
             return true;
         });
         filter.connect();
@@ -37,7 +38,7 @@ public class SCPIAdapterTest {
 
     @Test
     public void testFilterBlockIllegalCall() throws IOException {
-        ISCPISocket filter = new SCPIFilter(new TestDevice(), command -> {
+        ISCPISocket filter = new SCPIFilter(new TestSCPISocket(), command -> {
             if(command.getCommand().equals("BLCK")) {
                 return false;
             }
@@ -48,10 +49,10 @@ public class SCPIAdapterTest {
         filter.close();
     }
 
-    static class TestDevice extends MockSCPISocket {
+    static class TestSCPISocket extends MockSCPISocket {
 
-        public TestDevice() {
-            super(null, DeviceIdentifier.from("Test", "T00", "ABC123", "1.0"));
+        public TestSCPISocket() {
+            super(new MockSocket("TestSocket"), DeviceIdentifier.from("Test", "Test", "ABC123", "1.0"));
         }
 
         @Override

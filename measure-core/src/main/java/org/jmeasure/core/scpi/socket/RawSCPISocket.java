@@ -50,10 +50,10 @@ public class RawSCPISocket implements ISCPISocket {
     }
 
     @Override
-    public Optional<SCPICommand> receive(long timeout) throws IOException {
+    public Optional<String> receive(long timeout) throws IOException {
         try {
             ByteBuffer response = socket.receive(this.termination, timeout);
-            return Optional.of(new SCPICommand(new String(response.array(), charset)));
+            return Optional.of(new String(response.array(), charset));
         } catch(TimeoutException e) {
             return Optional.empty();
         }
@@ -75,8 +75,8 @@ public class RawSCPISocket implements ISCPISocket {
     }
 
     @Override
-    public void disconnect() {
-        socket.disconnect();
+    public void close() {
+        socket.close();
     }
 
     @Override

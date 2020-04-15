@@ -13,6 +13,6 @@ public interface ISCPIDeviceFactory {
 
     boolean supports(DeviceIdentifier info);
     
-    ISCPISocket create(ISCPISocket socket, DeviceIdentifier info) throws IOException, UnsupportedDeviceException;
+    ISCPISocket create(ISCPISocket socket) throws IOException, UnsupportedDeviceException;
     
 }

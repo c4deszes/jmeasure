@@ -21,10 +21,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * SCPISocketFactoryAutoConfiguration
  */
 @Configuration
+@Slf4j
 public class SCPISocketFactoryAutoConfiguration {
 
 	@Bean
@@ -45,16 +48,16 @@ public class SCPISocketFactoryAutoConfiguration {
 				Class<? extends MockSCPISocket> klass = (Class<? extends MockSCPISocket>) Class.forName(def.getBeanClassName());
 				String name = klass.getAnnotation(MockSCPIClass.class).value();
 				factory.register(name, klass);
-				//TODO log
+				log.debug("Registered MockSCPISocket: name=" + name + ", class=" + klass.getName());
 			} catch(Exception e) {
-				//TODO log
+				log.warn("Failed to register " + def.getBeanClassName(), e);
 			}
 		});
 		return factory;
 	}
 
     @Bean
-    public SCPISocketFactory scpiSocketFactory(List<ISCPISocketFactory> factories)  {
+    public SCPISocketFactory scpiSocketFactory(final List<ISCPISocketFactory> factories)  {
         return new SCPISocketFactory(factories);
     }
     
@@ -65,9 +68,7 @@ public class SCPISocketFactoryAutoConfiguration {
 	}
 
 	@Bean
-	public SCPIDeviceFactory deviceFactory(
-		@Autowired(required = false) final SCPISocketFactory scpiFactory, 
-		final List<ISCPIDeviceFactory> factories) {
-		return new SCPIDeviceFactory(scpiFactory, factories);
+	public SCPIDeviceFactory deviceFactory(final List<ISCPIDeviceFactory> factories) {
+		return new SCPIDeviceFactory(factories);
 	}
 }

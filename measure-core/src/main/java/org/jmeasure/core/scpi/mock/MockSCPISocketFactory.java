@@ -1,6 +1,5 @@
 package org.jmeasure.core.scpi.mock;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 

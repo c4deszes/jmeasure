@@ -16,7 +16,7 @@ A SCPI device is able to respond to standard SCPI commands
 
 3. For every vendor there should be at least one factory class
 
-4. Usually there are different variants of a product, it's recommended to implement them all using a single class. This generic device should have the model's name/number replaced with X's or 0's accordingly, while still being clear that it's the common driver for multiple devices. Then inside this class using the device identifier parameter you can differentiate the models.
+4. Usually there are different variants of a product, it's recommended to implement most of the functionality using a single class. This generic device should have the model's name/number replaced with X's or 0's accordingly, while still being clear that it's the common driver for multiple devices. Then inside this class using the device identifier parameter you can differentiate the models.
 
 ## Example
 
@@ -28,7 +28,7 @@ class org.jmeasure.keysight.Arb336XX extends SCPISocketAdapter implements Wavefo
     }
 
     @Override
-    public void setOutputConfiguration(int channel, OutputConfiguration output) {
+    public void setAnalogOutput(int channel, OutputConfiguration output) {
         boolean enabled = output.getBoolean(OutputParameter.ENABLED);
         this.send(SCPICommand.builder().command("OUTP" + channel).with(enabled ? "ON": "OFF").build());
         //...

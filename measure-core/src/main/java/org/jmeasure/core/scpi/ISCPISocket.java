@@ -30,13 +30,13 @@ public interface ISCPISocket extends Connectable {
      * The operation has to return {@code Optional.empty()} if the method timed out with no response
      * 
      * @param timeout Time to wait for a response, if 0 then wait indefinitely
-     * @return Optional of SCPICommand, empty if the device didn't respond
+     * @return Optional of String, empty if the device didn't respond
      * @throws IOException If the 
      */
-    public Optional<SCPICommand> receive(long timeout) throws IOException;
+    public Optional<String> receive(long timeout) throws IOException;
 
     /**
-     * 
+     * Receives part of the response from the device, up until the given character count has been reached
      * @param count
      * @param timeout
      * @return
@@ -44,7 +44,7 @@ public interface ISCPISocket extends Connectable {
      */
     Optional<String> receive(int count, long timeout) throws IOException;
 
-    default Optional<SCPICommand> query(SCPICommand command, long timeout) throws IOException {
+    default Optional<String> query(SCPICommand command, long timeout) throws IOException {
         this.send(command);
         return this.receive(timeout);
     }
@@ -52,7 +52,7 @@ public interface ISCPISocket extends Connectable {
     default DeviceIdentifier getDeviceIdentifier() throws IOException {
         try {
             this.send(SCPI.idnQuery);
-            DeviceIdentifier dev = DeviceIdentifier.from(this.receive(DEFAULT_TIMEOUT).get().getRaw());
+            DeviceIdentifier dev = DeviceIdentifier.from(this.receive(DEFAULT_TIMEOUT).get());
 
             return dev;
         } catch(IllegalArgumentException e) {

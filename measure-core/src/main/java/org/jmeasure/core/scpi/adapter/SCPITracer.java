@@ -2,6 +2,7 @@ package org.jmeasure.core.scpi.adapter;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Optional;
 
 import org.jmeasure.core.scpi.ISCPISocket;
@@ -22,13 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SCPITracer extends SCPISocketAdapter {
 
-    private FileOutputStream outbound;
+    private OutputStream outbound;
 
-    private FileOutputStream inbound;
+    private OutputStream inbound;
 
     private boolean consoleEnabled;
 
-    public SCPITracer(ISCPISocket adapter, boolean consoleEnabled, FileOutputStream inbound, FileOutputStream outbound) {
+    public SCPITracer(ISCPISocket adapter, boolean consoleEnabled, OutputStream inbound, OutputStream outbound) {
         super(adapter);
         this.consoleEnabled = consoleEnabled;
         this.outbound = outbound;
@@ -42,8 +43,8 @@ public class SCPITracer extends SCPISocketAdapter {
     }
 
     @Override
-    public void disconnect() {
-        super.disconnect();
+    public void close() {
+        super.close();
         this.log(super.getResourceString() + " ~ Disconnected.");
     }
 
@@ -62,10 +63,10 @@ public class SCPITracer extends SCPISocketAdapter {
         }
     }
 
-    private void inbound(SCPICommand command) {
+    private void inbound(String command) {
         try {
-            this.log(super.getResourceString() + " <- " + truncate(command.getRaw(), 30));
-            inbound.write(command.getRaw().getBytes());
+            this.log(super.getResourceString() + " <- " + truncate(command, 30));
+            inbound.write(command.getBytes());
         } catch (IOException e) {
             log.warn("Error writing inbound message.", e);
         }
@@ -88,8 +89,8 @@ public class SCPITracer extends SCPISocketAdapter {
     }
 
     @Override
-    public Optional<SCPICommand> receive(long timeout) throws IOException {
-        Optional<SCPICommand> response = super.receive(timeout);
+    public Optional<String> receive(long timeout) throws IOException {
+        Optional<String> response = super.receive(timeout);
         response.ifPresent(this::inbound);
         return response;
     }

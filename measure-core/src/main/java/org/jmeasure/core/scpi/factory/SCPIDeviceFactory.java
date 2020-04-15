@@ -23,41 +23,39 @@ import lombok.extern.slf4j.Slf4j;
  * DeviceFactory
  */
 @Slf4j
-public class SCPIDeviceFactory {
+public class SCPIDeviceFactory implements ISCPIDeviceFactory {
 
 	@Getter
 	@Setter
 	private long timeout = 1000;
 
-	private final SCPISocketFactory scpiFactory;
-
 	private final List<ISCPIDeviceFactory> factories;
 
-	public SCPIDeviceFactory(final SCPISocketFactory scpiFactory, ISCPIDeviceFactory... factories) {
-		this(scpiFactory, Arrays.asList(factories));
+	public SCPIDeviceFactory(ISCPIDeviceFactory... factories) {
+		this(Arrays.asList(factories));
 	}
 
-	public SCPIDeviceFactory(final SCPISocketFactory scpiFactory, List<ISCPIDeviceFactory> factories) {
-		this.scpiFactory = scpiFactory;
+	public SCPIDeviceFactory(List<ISCPIDeviceFactory> factories) {
 		this.factories = new LinkedList<>(factories);
 	}
 
-	public ISCPISocket create(ISocket socket) throws IOException {
-		return this.create(scpiFactory.create(socket));
+	@Override
+	public boolean supports(DeviceIdentifier info) {
+		//We return true, because worst case this factory returns the default ISCPISocket implementation @see SCPISocketAdapter
+		return true;
 	}
 
-	//@SuppressWarnings("resource")
+	@Override
 	public ISCPISocket create(ISCPISocket socket) throws IOException {
-		socket.connect();
 		socket.send(SCPI.idnQuery);
-		Optional<SCPICommand> response = socket.receive(timeout);
+		Optional<String> response = socket.receive(timeout);
 		response.orElseThrow(() -> new IOException("Device didn't respond"));
-		DeviceIdentifier deviceIdentifier = DeviceIdentifier.from(response.get().getRaw());
+		DeviceIdentifier deviceIdentifier = DeviceIdentifier.from(response.get());
 
 		for (ISCPIDeviceFactory factory : factories) {
 			try {
 				if (factory.supports(deviceIdentifier)) {
-					return factory.create(socket, deviceIdentifier);
+					return factory.create(socket);
 				}
 			} catch (UnsupportedDeviceException e) {
 				log.warn("Failed to instantiate " + deviceIdentifier + " using " + factory, e);
@@ -65,4 +63,5 @@ public class SCPIDeviceFactory {
 		}
 		return new SCPISocketAdapter(socket, deviceIdentifier);
 	}
+
 }

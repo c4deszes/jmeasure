@@ -1,3 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=/
-org.jmeasure.spring.configuration.FactoryAutoConfiguration,/
-org.jmeasure.spring.configuration.ServiceAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.jmeasure.spring.configuration.SCPISocketFactoryAutoConfiguration,org.jmeasure.spring.configuration.SocketFactoryAutoConfiguration,org.jmeasure.spring.configuration.ServiceAutoConfiguration

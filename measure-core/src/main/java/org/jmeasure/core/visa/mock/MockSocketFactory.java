@@ -5,29 +5,30 @@ import java.util.regex.Pattern;
 
 import org.jmeasure.core.device.ISocket;
 import org.jmeasure.core.visa.factory.ISocketFactory;
+import org.jmeasure.core.visa.factory.InstrumentNameProvider;
 
 /**
  * MockSocketFactory
  */
 public class MockSocketFactory implements ISocketFactory {
 
-    private final static Pattern pattern = Pattern.compile("MOCK::(?<class>.*)(?<name>::.*)?(::INSTR)?");
-
+    private final static Pattern pattern = Pattern.compile("MOCK::(?<class>[^:]*)(::(?!INSTR)(?<name>[^:]*))?(::INSTR)?");
+    
     @Override
-    public boolean supports(String resourceURI) {
-        return pattern.matcher(resourceURI).matches();
+    public boolean supports(String resourceString) {
+        return pattern.matcher(resourceString).matches();
     }
 
     @Override
-    public ISocket create(String resourceURI) {
-        Matcher matcher = pattern.matcher(resourceURI);
+    public MockSocket create(String resourceString, InstrumentNameProvider nameProvider) {
+        Matcher matcher = pattern.matcher(resourceString);
         if(matcher.matches()) {
             String className = matcher.group("class");
             String instrumentName = matcher.group("name");
-            return new MockSocket(className, instrumentName);
+
+            return new MockSocket(className, nameProvider.apply(instrumentName));
         }
         throw new IllegalArgumentException();
     }
 
-    
 }

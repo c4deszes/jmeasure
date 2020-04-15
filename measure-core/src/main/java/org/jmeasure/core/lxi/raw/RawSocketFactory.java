@@ -1,16 +1,20 @@
 package org.jmeasure.core.lxi.raw;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jmeasure.core.visa.UnsupportedSocketException;
 import org.jmeasure.core.visa.factory.ISocketFactory;
+import org.jmeasure.core.visa.factory.InstrumentNameProvider;
 
 /**
- * This factory class is capable of creating Raw TCP sockets for SCPI communication
+ * This factory class is capable of creating Raw TCP sockets for SCPI
+ * communication
  * 
  * <p>
  * It supports the VISA resource string syntax for raw tcp sockets.
- * <p>	
+ * <p>
  * Format: <i>TCPIP[board]::[host address]::[port]::SOCKET</i>
  */
 public class RawSocketFactory implements ISocketFactory {
@@ -23,8 +27,8 @@ public class RawSocketFactory implements ISocketFactory {
 	}
 
 	@Override
-	public RawSocket create(String connectionInfo) {
-		Matcher matcher = pattern.matcher(connectionInfo);
+	public RawSocket create(String resourceString, InstrumentNameProvider nameProvider) throws IOException, UnsupportedSocketException {
+		Matcher matcher = pattern.matcher(resourceString);
 		if(matcher.matches()) {
 			String host = matcher.group("host");
 			int port = Integer.parseInt(matcher.group("port"));
@@ -34,7 +38,7 @@ public class RawSocketFactory implements ISocketFactory {
 			}
 			return new RawSocket(host, port, board);
 		}
-		throw new IllegalArgumentException(connectionInfo + " doesn't match " + pattern.pattern());
+		throw new UnsupportedSocketException();
 	}
 	
 }
