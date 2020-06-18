@@ -119,9 +119,8 @@ public class SCPIShell implements ValueProvider, Converter<String, ISCPISocket> 
 	}
 
 	@Override
-	public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext,
-			String[] hints) {
-		return null;
+	public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
+		visa.getAll(ISCPISocket.class).stream().filter()
 	}
 	
 }

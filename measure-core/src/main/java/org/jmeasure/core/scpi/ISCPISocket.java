@@ -44,6 +44,13 @@ public interface ISCPISocket extends Connectable {
      */
     Optional<String> receive(int count, long timeout) throws IOException;
 
+    /**
+     * Sends a SCPI command to the device and then waits for a response
+     * @param command
+     * @param timeout
+     * @return
+     * @throws IOException
+     */
     default Optional<String> query(SCPICommand command, long timeout) throws IOException {
         this.send(command);
         return this.receive(timeout);
@@ -62,6 +69,12 @@ public interface ISCPISocket extends Connectable {
         }
     }
 
+    /**
+     * Resets the device by sending the standard 
+     * 
+     * @see SCPI.resetDevice
+     * @throws IOException
+     */
     default void reset() throws IOException {
         this.send(SCPI.resetDevice);
     }

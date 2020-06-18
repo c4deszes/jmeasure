@@ -42,4 +42,9 @@ public final class Units {
 	public static float mV(float millivolts) {
 		return milli(millivolts);
 	}
+
+	public static String toString(float value, String unit, boolean capitalize) {
+		//TODO: implement
+		return "";
+	}
 }

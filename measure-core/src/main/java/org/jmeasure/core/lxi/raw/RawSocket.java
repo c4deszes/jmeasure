@@ -17,6 +17,7 @@ import lombok.Getter;
  */
 public class RawSocket implements ISocket {
 
+    //TODO: remove getters from library code
     @Getter
     private final String host;
 
@@ -96,6 +97,7 @@ public class RawSocket implements ISocket {
     @Override
     public ByteBuffer receive(final int count, final long timeout) throws IOException, TimeoutException {
         try {
+            //TODO: restore previous timeout
             socket.setSoTimeout((int)timeout);
             ByteBuffer output = ByteBuffer.allocate(count);
             while(count > 0) {
@@ -113,6 +115,7 @@ public class RawSocket implements ISocket {
     @Override
     public ByteBuffer receive(final char delimiter, final long timeout) throws IOException, TimeoutException {
         try {
+            //TODO: restore previous timeout
             socket.setSoTimeout((int)timeout);
             //TODO: rewrite to use ArrayList
             ByteBuffer output = ByteBuffer.allocate(socket.getReceiveBufferSize());
@@ -134,7 +137,7 @@ public class RawSocket implements ISocket {
         try {
             socket.close();
         } catch (IOException | NullPointerException e) {
-
+            //TODO: warn
         } finally {
             socket = null;
         }

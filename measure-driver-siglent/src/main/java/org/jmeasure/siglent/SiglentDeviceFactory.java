@@ -21,9 +21,11 @@ public class SiglentDeviceFactory implements ISCPIDeviceFactory {
 	@Override
 	public ISCPISocket create(ISCPISocket socket) throws UnsupportedDeviceException, IOException {
 		try {
-			Class<? extends ISCPISocket> klass = lookupModel(socket.getDeviceIdentifier().getModel());
+			String model = socket.getDeviceIdentifier().getModel();
+			Class<? extends ISCPISocket> klass = lookupModel(model);
 			return klass.getConstructor(ISCPISocket.class, DeviceIdentifier.class).newInstance(socket, socket.getDeviceIdentifier());
 		} catch(Exception e) {
+			//TODO: clean
 			if(e.getCause() instanceof IOException) {
 				throw (IOException) e.getCause();
 			}
@@ -34,6 +36,9 @@ public class SiglentDeviceFactory implements ISCPIDeviceFactory {
 	public Class<? extends ISCPISocket> lookupModel(String model) {
 		if(model.matches("SDG10[36]{1}2X")) {
 			return SDG1000X.class;
+		}
+		else if(model.matches("SDS1[12]{1}4X-E")) {
+			return SDS1000XE.class;
 		}
 		return null;
 	}
