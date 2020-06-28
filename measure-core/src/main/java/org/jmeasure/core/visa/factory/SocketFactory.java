@@ -33,11 +33,11 @@ public class SocketFactory implements ISocketFactory {
     }
 
     @Override
-    public ISocket create(String resourceString, InstrumentNameProvider nameProvider) throws IOException, UnsupportedSocketException {
+    public ISocket create(String resourceString) throws IOException, UnsupportedSocketException {
         for(ISocketFactory factory: factories) {
             if(factory.supports(resourceString)) {
                 try {
-                    return factory.create(resourceString, nameProvider);
+                    return factory.create(resourceString);
                 } catch(UnsupportedSocketException e) {
                     //TODO log warning
                 }  

@@ -1,0 +1,7 @@
+description = 'Allows basic interaction with test and measurement devices via a command line interface'
+
+dependencies {
+	implementation project(':core')
+
+	implementation 'info.picocli:picocli:4.3.2'
+}

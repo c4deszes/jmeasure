@@ -6,16 +6,12 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /**
  * 
  * @param <T>
  */
 public class Signal<T extends Comparable<T>> {
 	
-	@Getter
 	private String id;
 	
 	private TreeSet<DataPoint<T>> data = new TreeSet<DataPoint<T>>((a, b) -> Float.compare(a.time, b.time));
@@ -36,6 +32,10 @@ public class Signal<T extends Comparable<T>> {
 	
 	public Set<DataPoint<T>> getData() {
 		return data;
+	}
+
+	public String getId() {
+		return id;
 	}
 	
 	public void add(DataPoint<T> dp) {
@@ -70,10 +70,14 @@ public class Signal<T extends Comparable<T>> {
 		return Collections.max(data).value;
 	}
 
-	@AllArgsConstructor
 	public static class DataPoint<T extends Comparable<T>> implements Comparable<DataPoint<T>> {
 		public final float time;
 		public final T value;
+
+		public DataPoint(float time, T value) {
+			this.time = time;
+			this.value = value;
+		}
 		
 		@Override
 		public int compareTo(DataPoint<T> arg0) {

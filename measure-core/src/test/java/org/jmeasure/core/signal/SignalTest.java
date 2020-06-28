@@ -2,6 +2,8 @@ package org.jmeasure.core.signal;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.function.Function;
+
 import org.jmeasure.core.signal.Signal;
 import org.jmeasure.core.signal.Signal.DataPoint;
 import org.junit.Test;
@@ -53,9 +55,7 @@ public class SignalTest {
 		signal.add(0.0f, 1.0f);
 		signal.add(1.0f, 0.0f);
 
-		Signal<Boolean> copy = new Signal<>(signal, (value) -> {
-			return value > 0.5f;
-		});
+		Signal<Boolean> copy = new Signal<>(signal, value -> value > 0.5f);
 		assertEquals("test", copy.getId());
 		assertEquals(2, copy.getData().size());
 		assertEquals(false, copy.min());

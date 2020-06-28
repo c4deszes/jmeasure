@@ -5,7 +5,6 @@ import java.util.regex.Pattern;
 
 import org.jmeasure.core.device.ISocket;
 import org.jmeasure.core.visa.factory.ISocketFactory;
-import org.jmeasure.core.visa.factory.InstrumentNameProvider;
 
 /**
  * MockSocketFactory
@@ -20,13 +19,13 @@ public class MockSocketFactory implements ISocketFactory {
     }
 
     @Override
-    public MockSocket create(String resourceString, InstrumentNameProvider nameProvider) {
+    public MockSocket create(String resourceString) {
         Matcher matcher = pattern.matcher(resourceString);
         if(matcher.matches()) {
             String className = matcher.group("class");
             String instrumentName = matcher.group("name");
 
-            return new MockSocket(className, nameProvider.apply(instrumentName));
+            return new MockSocket(className, instrumentName);
         }
         throw new IllegalArgumentException();
     }

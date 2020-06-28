@@ -58,7 +58,7 @@ public class MockSocketFactoryTest {
 			return;
 		}
 
-		MockSocket socket = factory.create(input, name -> name);
+		MockSocket socket = factory.create(input);
 		assertEquals(className, socket.getClassName());
 		if(socket.getInstrumentName() == null && !instrumentNamePresent) {
             return;

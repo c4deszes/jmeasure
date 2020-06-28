@@ -8,20 +8,15 @@ import org.jmeasure.core.scpi.factory.SCPISocketFactory;
 import org.jmeasure.core.visa.UnsupportedSocketException;
 import org.jmeasure.core.visa.VisaDeviceFactory;
 
-import lombok.Setter;
-
 /**
  * SCPIService
  */
 public class SCPIService implements VisaDeviceFactory<ISCPISocket> {
 
-    @Setter
     private SCPISocketAdapter defaultAdapter;
 
-    @Setter
     private SCPISocketFactory scpiSocketFactory;
 
-    @Setter
     private SCPIDeviceFactory scpiDeviceFactory;
 
     public SCPIService() {

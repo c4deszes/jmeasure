@@ -48,9 +48,10 @@ public class SCPISocketFactoryAutoConfiguration {
 				Class<? extends MockSCPISocket> klass = (Class<? extends MockSCPISocket>) Class.forName(def.getBeanClassName());
 				String name = klass.getAnnotation(MockSCPIClass.class).value();
 				factory.register(name, klass);
-				log.debug("Registered MockSCPISocket: name=" + name + ", class=" + klass.getName());
+				//TODO: fix
+				//log.debug("Registered MockSCPISocket: name=" + name + ", class=" + klass.getName());
 			} catch(Exception e) {
-				log.warn("Failed to register " + def.getBeanClassName(), e);
+				//log.warn("Failed to register " + def.getBeanClassName(), e);
 			}
 		});
 		return factory;

@@ -3,9 +3,7 @@ on:
   push:
     paths-ignore:
       - '.github/templates/**'
-      - 'doc/**'
       - 'README.md'
-      - '.vscode/**'
   pull_request:
     types: [opened]
 
@@ -23,7 +21,7 @@ jobs:
           java-version: 1.8
 
       - name: Build
-        run: mvn -B package
+        run: gradle build --info
       
       - name: Copy
         run: |

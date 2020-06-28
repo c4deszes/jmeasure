@@ -4,14 +4,11 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import lombok.Getter;
-
 /**
  * CompositeSignal
  */
 public class CompositeSignal<T extends Comparable<T>> {
 
-	@Getter
 	private String id;
 
 	private Set<Signal<T>> signals = new HashSet<>();
@@ -35,6 +32,10 @@ public class CompositeSignal<T extends Comparable<T>> {
 
 	public Set<Signal<T>> getSignals() {
 		return signals;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 import org.jmeasure.core.visa.DeviceIdentifier;
 
 /**
- * LXIDiscovery is the generic interface for discovering LXI devices on the network
+ * LXIDiscovery is the interface for discovering LXI devices on the network
  */
 public interface LXIDiscovery {
 

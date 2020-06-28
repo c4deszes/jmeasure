@@ -23,8 +23,6 @@ import org.jmeasure.core.lxi.vxi11.portmap.PortmapResponse;
 import org.jmeasure.core.scpi.socket.RawSCPISocket;
 import org.jmeasure.core.visa.DeviceIdentifier;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * VXI11Discovery implements RPC based instrument discovery
  * 
@@ -32,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
  * This implementation broadcasts RPC Portmap queries over UDP.
  * The portmap parameters specifically look for the existence of the VXI-11 Device Core program over TCP.
  */
-@Slf4j
 public class VXI11Discovery implements LXIDiscovery {
 
     private int timeout;
@@ -53,7 +50,11 @@ public class VXI11Discovery implements LXIDiscovery {
      */
     public VXI11Discovery() {
         this(1000, true, 1);
-    }
+	}
+	
+	public VXI11Discovery(int timeout) {
+		this(timeout, true, 1);
+	}
 
     /**
      * Constructs a new VXI-11 discovery using the given parameters
@@ -90,10 +91,11 @@ public class VXI11Discovery implements LXIDiscovery {
 
             if(resolveDeviceInfo) {
                 devices.replaceAll((ip, dev) -> {
-                    try(RawSCPISocket socket = new RawSCPISocket(new VXI11Socket(ip))) {
+                    try(RawSCPISocket socket = new RawSCPISocket(new VXI11Socket(ip, "inst0"))) {
                         return socket.getDeviceIdentifier();
                     } catch(IOException e) {
-                        log.warn("Failed to resolve device identifier of " + ip);
+						//TODO: log warn
+                        //log.warn("Failed to resolve device identifier of " + ip);
                         return dev;
                     }
                 });

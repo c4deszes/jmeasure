@@ -10,21 +10,15 @@ import java.util.concurrent.TimeoutException;
 
 import org.jmeasure.core.device.ISocket;
 
-import lombok.Getter;
-
 /**
  * RawSocket implements a generic TCP/IP socket for sending and receiving byte streams
  */
 public class RawSocket implements ISocket {
 
-    //TODO: remove getters from library code
-    @Getter
     private final String host;
 
-    @Getter
     private final int port;
 
-    @Getter
     private final int board;
 
     private transient Socket socket;
@@ -60,12 +54,19 @@ public class RawSocket implements ISocket {
         this.board = board;
 
         this.connect();
-    }
+	}
+	
+	public int getBoard() {
+		return board;
+	}
 
-    @Override
-    public String getInstrumentName() {
-        return null;
-    }
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
 
     @Override
     public String getResourceString() {

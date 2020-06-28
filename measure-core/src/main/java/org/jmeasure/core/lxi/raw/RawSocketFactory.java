@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 
 import org.jmeasure.core.visa.UnsupportedSocketException;
 import org.jmeasure.core.visa.factory.ISocketFactory;
-import org.jmeasure.core.visa.factory.InstrumentNameProvider;
 
 /**
  * This factory class is capable of creating Raw TCP sockets for SCPI
@@ -27,7 +26,7 @@ public class RawSocketFactory implements ISocketFactory {
 	}
 
 	@Override
-	public RawSocket create(String resourceString, InstrumentNameProvider nameProvider) throws IOException, UnsupportedSocketException {
+	public RawSocket create(String resourceString) throws IOException, UnsupportedSocketException {
 		Matcher matcher = pattern.matcher(resourceString);
 		if(matcher.matches()) {
 			String host = matcher.group("host");

@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,42 +17,25 @@ import javax.jmdns.ServiceListener;
 import org.jmeasure.core.lxi.LXIDiscovery;
 import org.jmeasure.core.visa.DeviceIdentifier;
 
-import lombok.Getter;
-
 /**
  * MDNSDiscovery
  */
 public class MDNSDiscovery implements LXIDiscovery {
 
-    public static enum ServiceType {
-        LXI("_lxi._tcp.local"), 
-        HTTP("_http._tcp.local"), 
-        HISLIP("_hislip._tcp.local"), 
-        SCPI_RAW("_scpi-raw._tcp.local"), 
-        SCPI_TELNET("_scpi-telnet._tcp.local"), 
-        VXI11("_vxi11._tcp.local");
-
-        @Getter
-        private String type;
-
-        public final static ServiceType[] ALL = ServiceType.values();
-        
-        private ServiceType(String type) {
-            this.type = type;
-        }
-
-    }
-
     private int timeout = 5000;
 
-    private List<ServiceType> serviceTypes;
+	private List<MDNSServiceType> serviceTypes;
+	
+	public MDNSDiscovery() {
+		this(MDNSServiceType.LXI);
+	}
 
-    public MDNSDiscovery(List<ServiceType> types) {
-        this.serviceTypes = new ArrayList<>(types);
+	public MDNSDiscovery(MDNSServiceType... types) {
+        this(Arrays.asList(types));
     }
 
-    public MDNSDiscovery(ServiceType... types) {
-        this(Arrays.asList(types));
+    public MDNSDiscovery(List<MDNSServiceType> types) {
+        this.serviceTypes = new ArrayList<>(types);
     }
 
     @Override
@@ -76,7 +60,7 @@ public class MDNSDiscovery implements LXIDiscovery {
                     //
                 }
             };
-            serviceTypes.forEach(type -> jmdns.addServiceListener(type.getType(), callback));
+            serviceTypes.forEach(type -> jmdns.addServiceListener(type.fqdn(), callback));
 
             Thread.sleep(timeout);
 

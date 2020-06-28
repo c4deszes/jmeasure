@@ -39,13 +39,6 @@ public class RawSocketTest extends RawSocketBase {
         socket.close();
     }
 
-    @Test
-    public void testInstrumentNameNull() throws IOException {
-        RawSocket socket = new RawSocket("localhost", 50000, 0);
-        assertEquals(false, socket.getInstrumentName() != null);
-        socket.close();;
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorInvalidPortNegative() throws IOException {
         RawSocket socket = new RawSocket("localhost", -1, 0);

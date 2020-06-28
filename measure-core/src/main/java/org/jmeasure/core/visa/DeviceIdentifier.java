@@ -1,17 +1,11 @@
 package org.jmeasure.core.visa;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /**
  * Device identifier, specified in the SCPI-99 standard
  * 
  * <p>
  * Includes the device vendor, model, serial number and firmware version
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
 public final class DeviceIdentifier {
 
 	public final static DeviceIdentifier UNKNOWN = new DeviceIdentifier("-", "-", "-", "-");
@@ -22,13 +16,26 @@ public final class DeviceIdentifier {
 	private final String firmwareVersion;
 
 	/**
+	 * @param manufacturer
+	 * @param model
+	 * @param serialNumber
+	 * @param firmwareVersion
+	 */
+	private DeviceIdentifier(String manufacturer, String model, String serialNumber, String firmwareVersion) {
+		this.manufacturer = manufacturer;
+		this.model = model;
+		this.serialNumber = serialNumber;
+		this.firmwareVersion = firmwareVersion;
+	}
+
+	/**
 	 * Constructs an Identifier from the format seen in the LXI Discovery and Identification specification
 	 * 
 	 * @param raw Raw string in the 
 	 * @return Device identifier object
 	 */
 	public static DeviceIdentifier from(String raw) {
-		String[] info = raw.split(",");
+		String[] info = raw.trim().split(",");
 		if(info.length != 4) {
 			throw new IllegalArgumentException("bad identifier: " + raw + " must be 4 comma-separated fields");
 		}
@@ -48,6 +55,22 @@ public final class DeviceIdentifier {
 		return new DeviceIdentifier(manufacturer, model, serialNumber, firmwareVersion);
 	}
 
+	public String getManufacturer() {
+		return manufacturer;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public String getFirmwareVersion() {
+		return firmwareVersion;
+	}
+
 	/**
 	 * Returns the string representation of this identifier
 	 * @return Raw string identifier
@@ -62,6 +85,7 @@ public final class DeviceIdentifier {
 	 */
 	@Override
 	public String toString() {
+		//TODO: rework format
 		return "[mf=" + manufacturer + ";model=" + model + ";sn=" + serialNumber + ";ver=" + firmwareVersion + "]";
 	}
 }

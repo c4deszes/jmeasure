@@ -1,6 +1,6 @@
 # JMeasure
 
-JMeasure is a Java API for Test & Measurement devices, intended to be used for test automation. It's purpose is to extend CI processes with hardware tests. Different scenarios can be set up, tested with the ability to create test reports.
+JMeasure is a Java API for Test & Measurement devices, intended to be used for test automation. It's purpose is to extend continuous integration workflows with hardware tests.
 
 The core consists of abstract interfaces for devices, communication interfaces and helper methods. Interfaces are similiar to those specified in the IVIFoundation's [instrument class specifications](http://www.ivifoundation.org/specifications/)
 

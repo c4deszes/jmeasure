@@ -13,17 +13,11 @@ import java.util.Set;
 
 import org.jmeasure.core.device.ISocket;
 import org.jmeasure.core.visa.factory.ISocketFactory;
-import org.jmeasure.core.visa.factory.InstrumentNameProvider;
-import org.jmeasure.core.visa.factory.SocketFactory;
-
-import lombok.Setter;
-
 /**
  * VISAResourceManager
  */
-public class VISAResourceManager implements AutoCloseable, InstrumentNameProvider {
+public class VISAResourceManager implements AutoCloseable {
 
-    @Setter
     private ISocketFactory socketFactory;
 
     private List<VisaDeviceFactory<?>> factories;
@@ -49,7 +43,7 @@ public class VISAResourceManager implements AutoCloseable, InstrumentNameProvide
 
     public <T> T connect(String resourceString, Class<T> klass) throws IOException, VisaException {
         try {
-            return this.connect(socketFactory.create(resourceString, this), klass);
+            return this.connect(socketFactory.create(resourceString), klass);
         } catch(UnsupportedSocketException e) {
             throw new VisaException(e);
         }
@@ -72,7 +66,7 @@ public class VISAResourceManager implements AutoCloseable, InstrumentNameProvide
         
         try {
             T candidate = findCandidate(candidates, klass);
-            this.sockets.put(socket.getInstrumentName(), candidate);
+            this.sockets.put(socket.getResourceString(), candidate);
             return candidate;
         } catch(NoSuchElementException e) {
             throw new VisaException("No candidate found for type " + klass);
@@ -116,14 +110,6 @@ public class VISAResourceManager implements AutoCloseable, InstrumentNameProvide
     @Override
     public void close() {
         //this.sockets.forEach((name, dev) -> dev.close());
-    }
-
-    @Override
-    public String apply(String name) {
-        if(name == null || name.isEmpty()) {
-            return this.getDefaultInstrumentName();
-        }
-        return name;
     }
 
     private String getDefaultInstrumentName() {

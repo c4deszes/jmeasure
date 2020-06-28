@@ -7,8 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import lombok.Getter;
-
 /**
  * SCPICommand is a message understood by SCPI devices
  * 
@@ -21,13 +19,10 @@ import lombok.Getter;
  */
 public final class SCPICommand {
 
-	@Getter
 	private String raw;
 
-	@Getter
 	private String command;
 
-	@Getter
 	private List<String> parameters;
 
 	/**
@@ -64,13 +59,34 @@ public final class SCPICommand {
 		int firstSpace = this.raw.indexOf(" ");
 		if(firstSpace == -1 || firstSpace == raw.length()) {
 			this.command = this.raw;
-			this.parameters = Collections.emptyList();
+			this.parameters = Collections.unmodifiableList(Collections.emptyList());
 		}
 		else {
 			this.command = raw.substring(0, firstSpace);
 			String[] params = raw.substring(firstSpace+1, raw.length()).split(",");
 			this.parameters = Collections.unmodifiableList(Arrays.asList(params));
 		}
+	}
+
+	/**
+	 * @return the command
+	 */
+	public String getCommand() {
+		return command;
+	}
+
+	/**
+	 * @return the raw
+	 */
+	public String getRaw() {
+		return raw;
+	}
+
+	/**
+	 * @return the parameters
+	 */
+	public List<String> getParameters() {
+		return parameters;
 	}
 
 	/**

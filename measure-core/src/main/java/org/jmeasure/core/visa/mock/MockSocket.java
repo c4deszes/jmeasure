@@ -7,8 +7,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.jmeasure.core.device.ISocket;
 
-import lombok.Getter;
-
 /**
  * VirtualSocket
  */
@@ -16,7 +14,6 @@ public class MockSocket implements ISocket {
 
     private boolean connected;
 
-    @Getter
     private String className;
 
     private String instrumentName;
@@ -52,10 +49,13 @@ public class MockSocket implements ISocket {
         return "MOCK::" + className + (instrumentName != null ? "::" + instrumentName: "") + "::INSTR";
     }
 
-    @Override
-    public String getInstrumentName() {
-        return this.instrumentName;
-    }
+	public String getClassName() {
+		return className;
+	}
+
+	public String getInstrumentName() {
+		return instrumentName;
+	}
 
     @Override
     public void send(ByteBuffer message) throws IOException {

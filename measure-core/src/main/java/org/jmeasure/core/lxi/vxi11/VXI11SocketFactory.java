@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import org.jmeasure.core.device.ISocket;
 import org.jmeasure.core.visa.UnsupportedSocketException;
 import org.jmeasure.core.visa.factory.ISocketFactory;
-import org.jmeasure.core.visa.factory.InstrumentNameProvider;
 
 /**
  * This factory class is capable of creating VXI-11 sockets for SCPI
@@ -30,7 +29,7 @@ public class VXI11SocketFactory implements ISocketFactory {
 	}
 
 	@Override
-	public VXI11Socket create(String resourceString, InstrumentNameProvider nameProvider) throws IOException, UnsupportedSocketException {
+	public VXI11Socket create(String resourceString) throws IOException, UnsupportedSocketException {
 		Matcher matcher = pattern.matcher(resourceString);
 		if(matcher.matches()) {
 			int board = Integer.parseInt(matcher.group("board"));
@@ -38,7 +37,7 @@ public class VXI11SocketFactory implements ISocketFactory {
 			String instrument = matcher.group("instrument");
 
 			//TODO: add factory default configuration
-            return new VXI11Socket(InetAddress.getByName(host), nameProvider.apply(instrument));
+            return new VXI11Socket(InetAddress.getByName(host), instrument);
 		}
 		throw new UnsupportedSocketException();
 	}

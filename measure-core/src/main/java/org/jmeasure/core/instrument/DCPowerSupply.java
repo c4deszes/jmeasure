@@ -2,9 +2,6 @@ package org.jmeasure.core.instrument;
 
 import org.jmeasure.core.util.EnumParameters;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.io.IOException;
 
 /**
@@ -101,21 +98,48 @@ public interface DCPowerSupply extends AutoCloseable {
 		VOLTAGE, CURRENT, OVP_VOLTAGE, OVP_ENABLED
 	}
 
-	@AllArgsConstructor
 	public static class PowerState {
 
-		@Getter
 		private final float voltage;
 
-		@Getter
 		private final float current;
 
-		@Getter
 		private final OutputMode mode;
 
 		public static enum OutputMode {
 			CONSTANT_CURRENT, CONSTANT_VOLTAGE;
 		}
 
+		/**
+		 * @param voltage
+		 * @param current
+		 * @param mode
+		 */
+		public PowerState(float voltage, float current, OutputMode mode) {
+			this.voltage = voltage;
+			this.current = current;
+			this.mode = mode;
+		}
+
+		/**
+		 * @return the voltage
+		 */
+		public float getVoltage() {
+			return voltage;
+		}
+
+		/**
+		 * @return the current
+		 */
+		public float getCurrent() {
+			return current;
+		}
+
+		/**
+		 * @return the mode
+		 */
+		public OutputMode getMode() {
+			return mode;
+		}
 	}
 }

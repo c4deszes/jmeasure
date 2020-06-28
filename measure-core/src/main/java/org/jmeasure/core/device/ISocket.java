@@ -39,9 +39,4 @@ public interface ISocket extends Connectable {
      * @throws TimeoutException If the timeout has been reached
      */
     ByteBuffer receive(final char termination, final long timeout) throws IOException, TimeoutException;
-
-    /**
-     * Returns the instrument name associated with this socket
-     */
-     String getInstrumentName();
 }

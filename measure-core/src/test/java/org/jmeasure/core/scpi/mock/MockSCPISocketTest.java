@@ -58,6 +58,7 @@ public class MockSCPISocketTest {
         device.close();
     }
 
+	/*
     @Test
     public void testCommandPathInt() throws IOException {
         TestDevice device = new TestDevice();
@@ -69,7 +70,8 @@ public class MockSCPISocketTest {
 
         device.close();
     }
-
+	*/
+	
     public static class TestDevice extends MockSCPISocket {
 
         public TestDevice() {

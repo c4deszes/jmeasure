@@ -32,9 +32,5 @@ public interface ISocketFactory {
      * @throws IOException if the creation failed because of a communication error
      * @throws UnsupportedSocketException if the socket creation failed because of a bad resource string
      */
-    ISocket create(String resourceString, InstrumentNameProvider nameProvider) throws IOException, UnsupportedSocketException;
-
-    default ISocket create(String resourceString) throws IOException, UnsupportedSocketException {
-        return this.create(resourceString, name -> name);
-    }
+    ISocket create(String resourceString) throws IOException, UnsupportedSocketException;
 }

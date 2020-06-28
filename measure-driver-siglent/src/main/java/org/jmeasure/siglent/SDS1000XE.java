@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.jmeasure.core.instrument.Oscilloscope;
 import org.jmeasure.core.instrument.TimeDomainAnalyzer;
+import org.jmeasure.core.instrument.TimeDomainAnalyzer.Trigger.Settings;
 import org.jmeasure.core.scpi.ISCPISocket;
 import org.jmeasure.core.scpi.SCPICommand;
 import org.jmeasure.core.scpi.SCPISocketAdapter;
@@ -25,7 +26,7 @@ public class SDS1000XE extends SCPISocketAdapter implements Oscilloscope {
 	@Override
 	public void setTimebase(TimebaseSettings timebase) throws IOException {
 		timebase.<Float>get(TimebaseParameter.SPAN).ifPresent(span -> {
-			this.send(SCPICommand.builder().command("TDIV").with(""));
+			//this.send(SCPICommand.builder().command("TDIV").with(""));
 		});
 	}
 
@@ -64,6 +65,5 @@ public class SDS1000XE extends SCPISocketAdapter implements Oscilloscope {
 		// TODO Auto-generated method stub
 
 	}
-
 	
 }

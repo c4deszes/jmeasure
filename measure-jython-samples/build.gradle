@@ -1,0 +1,5 @@
+description = 'Jython samples'
+
+dependencies {
+	implementation 'org.python:jython-slim:2.7.2'
+}

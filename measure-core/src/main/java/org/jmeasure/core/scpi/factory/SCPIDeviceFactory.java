@@ -15,18 +15,11 @@ import org.jmeasure.core.visa.DeviceIdentifier;
 import org.jmeasure.core.visa.UnsupportedDeviceException;
 import org.jmeasure.core.visa.factory.SocketFactory;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * DeviceFactory
  */
-@Slf4j
 public class SCPIDeviceFactory implements ISCPIDeviceFactory {
 
-	@Getter
-	@Setter
 	private long timeout = 1000;
 
 	private final List<ISCPIDeviceFactory> factories;
@@ -58,7 +51,8 @@ public class SCPIDeviceFactory implements ISCPIDeviceFactory {
 					return factory.create(socket);
 				}
 			} catch (UnsupportedDeviceException e) {
-				log.warn("Failed to instantiate " + deviceIdentifier + " using " + factory, e);
+				//TODO: log
+				//log.warn("Failed to instantiate " + deviceIdentifier + " using " + factory, e);
 			}
 		}
 		return new SCPISocketAdapter(socket, deviceIdentifier);

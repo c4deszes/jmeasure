@@ -12,7 +12,7 @@ public class AnalogSignal extends Signal<Float> {
 		super(id);
 	}
 
-	public AnalogSignal(Signal<Float> signal, Function<Float, Float> transform) {
+	public <U extends Comparable<U>> AnalogSignal(Signal<U> signal, Function<U, Float> transform) {
 		super(signal, transform);
 	}
 

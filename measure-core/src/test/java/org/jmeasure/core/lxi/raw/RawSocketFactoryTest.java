@@ -59,7 +59,7 @@ public class RawSocketFactoryTest extends RawSocketBase {
 			return;
 		}
 
-		RawSocket socket = factory.create(input, name -> name);
+		RawSocket socket = factory.create(input);
 		assertEquals(host, socket.getHost());
 		assertEquals(port, socket.getPort());
 		assertEquals(board, socket.getBoard());

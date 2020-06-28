@@ -1,0 +1,17 @@
+rootProject.name = "jmeasure"
+
+include(':apps')
+include(':cli')
+include(':core')
+include(':driver-siglent')
+include(':extension')
+include(':gradle-plugin')
+include(':jython-samples')
+include(':samples')
+include(':signals')
+include(':spring-adapter')
+include(':test-framework')
+
+rootProject.children.each{project -> 
+	project.projectDir = file("measure-${project.name}")
+}

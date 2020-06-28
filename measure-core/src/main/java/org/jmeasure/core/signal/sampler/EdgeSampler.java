@@ -6,14 +6,11 @@ import org.jmeasure.core.signal.sampler.Sampler;
 import org.jmeasure.core.signal.Signal;
 import org.jmeasure.core.signal.Signal.DataPoint;
 
-import lombok.Getter;
-
 /**
  * EdgeSampler takes any signal and outputs a signal which is sampled at the given rate
  */
 public class EdgeSampler<U extends Comparable<U>> implements Sampler<U, Signal<U>> {
 
-	@Getter
 	private long points;
 
 	public EdgeSampler(long points) {
@@ -36,6 +33,10 @@ public class EdgeSampler<U extends Comparable<U>> implements Sampler<U, Signal<U
 		}
 		
 		return output;
+	}
+
+	public long getPoints() {
+		return points;
 	}
 	
 }

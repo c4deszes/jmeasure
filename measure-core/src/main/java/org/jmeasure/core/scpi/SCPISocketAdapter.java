@@ -5,9 +5,6 @@ import java.util.Optional;
 
 import org.jmeasure.core.visa.DeviceIdentifier;
 
-import lombok.AccessLevel;
-import lombok.Setter;
-
 /**
  * SCPISocketAdapter
  */
@@ -15,7 +12,6 @@ public class SCPISocketAdapter implements ISCPISocket {
 
     private final ISCPISocket adapter;
 
-    @Setter(value = AccessLevel.PROTECTED)
     private DeviceIdentifier deviceIdentifier;
 
     public SCPISocketAdapter(final ISCPISocket adapter) {
@@ -30,7 +26,11 @@ public class SCPISocketAdapter implements ISCPISocket {
     @Override
     public DeviceIdentifier getDeviceIdentifier() throws IOException {
         return this.deviceIdentifier == null ? ISCPISocket.super.getDeviceIdentifier() : this.deviceIdentifier;
-    }
+	}
+	
+	protected void setDeviceIdentifier(DeviceIdentifier deviceIdentifier) {
+		this.deviceIdentifier = deviceIdentifier;
+	}
 
     @Override
     public String getResourceString() {

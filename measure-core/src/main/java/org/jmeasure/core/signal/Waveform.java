@@ -2,17 +2,18 @@ package org.jmeasure.core.signal;
 
 import org.jmeasure.core.util.EnumParameters;
 
-import lombok.Getter;
-
 import org.jmeasure.core.signal.Waveform.WaveformParameter;
 
 public class Waveform extends EnumParameters<WaveformParameter> {
 
-	@Getter
 	private WaveformType type;
 
 	public static Waveform builder() {
 		return new Waveform();
+	}
+
+	public WaveformType getType() {
+		return type;
 	}
 
 	public Waveform type(WaveformType type) {

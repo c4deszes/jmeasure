@@ -51,16 +51,12 @@ public class VXI11Socket implements ISocket {
 
     private transient CreateLinkResponse link;
 
-    public VXI11Socket(final String host) throws IOException {
-        this(InetAddress.getByName(host));
+    public VXI11Socket(final String host, final String instrumentName) throws IOException {
+        this(InetAddress.getByName(host), instrumentName);
     }
 
-    public VXI11Socket(final InetAddress host) throws IOException {
-        this(host, null);
-    }
-
-    public VXI11Socket(final InetAddress host, final String name) throws IOException {
-        this(host, name, false, 0, DEFAULT_IO_TIMEOUT, DEFAULT_WRITE_BLOCK_SIZE);
+    public VXI11Socket(final InetAddress host, final String instrumentName) throws IOException {
+        this(host, instrumentName, false, 0, DEFAULT_IO_TIMEOUT, DEFAULT_WRITE_BLOCK_SIZE);
     }
 
     public VXI11Socket(final InetAddress host, final String name, boolean lock, int lockTimeout, int ioTimeout, int writeBlockSize) throws IOException {
@@ -72,11 +68,6 @@ public class VXI11Socket implements ISocket {
         this.writeBlockSize = writeBlockSize;
 
         this.connect();
-    }
-
-    @Override
-    public String getInstrumentName() {
-        return this.name;
     }
 
     @Override

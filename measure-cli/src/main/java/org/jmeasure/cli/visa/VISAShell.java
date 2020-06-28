@@ -8,19 +8,14 @@ import org.jmeasure.core.lxi.raw.RawSocket;
 import org.jmeasure.core.lxi.vxi11.VXI11Socket;
 import org.jmeasure.core.visa.VISAResourceManager;
 import org.jmeasure.core.visa.VisaException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.shell.standard.ShellCommandGroup;
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
 
 /**
  * VISAShell
  */
-@ShellComponent
-@ShellCommandGroup("VISA")
+
 public class VISAShell {
 
+	/*
     @Autowired
     private VISAResourceManager visa;
 
@@ -79,6 +74,7 @@ public class VISAShell {
         @ShellOption(value = {"-n", "--name"}, defaultValue = "inst0", help = "Instrument name") String name) {
 
         return null;
-    }
+	}
+	*/
 
 }

@@ -17,14 +17,11 @@ import org.jmeasure.core.scpi.SCPICommand;
 import org.jmeasure.core.visa.DeviceIdentifier;
 import org.jmeasure.core.visa.mock.MockSocket;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * MockSCPISocket is used to emulate a SCPI interpreting device
  * 
  * 
  */
-@Slf4j
 public abstract class MockSCPISocket implements ISCPISocket {
 
 	private BlockingQueue<String> rxStream = new LinkedBlockingQueue<>(10);
@@ -137,7 +134,8 @@ public abstract class MockSCPISocket implements ISCPISocket {
 				this.pushResponse(response);
 			}
 		} catch (IllegalAccessException | IllegalArgumentException e) {
-			log.warn("Failed to invoke callback", e);
+			//TODO: log
+			e.printStackTrace();
 		}
 	}
 
