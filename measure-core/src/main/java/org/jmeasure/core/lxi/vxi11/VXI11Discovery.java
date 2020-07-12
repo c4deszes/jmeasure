@@ -7,8 +7,10 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.acplt.oncrpc.OncRpcBroadcastEvent;
 import org.acplt.oncrpc.OncRpcBroadcastListener;
@@ -32,96 +34,131 @@ import org.jmeasure.core.visa.DeviceIdentifier;
  */
 public class VXI11Discovery implements LXIDiscovery {
 
-    private int timeout;
+	/**
+	 * Default timeout, 1 second as specified in the LXI standard
+	 */
+	public final static int DEFAULT_TIMEOUT = 1000;
 
-    private boolean resolveDeviceInfo;
+	private int timeout;
 
-    private int retransmissions;
+	private boolean resolveDeviceInfo;
 
-    /**
-     * Constructs a new VXI-11 discovery tool using the default parameters, which are:
-     * <ul>
-     * <li>
-     * 1 second timeout (as stated in the LXI specification)
-     * <li>
-     * Automatically resolve device identifiers
-     * <li>
-     * Retransmit 1 time
-     */
-    public VXI11Discovery() {
-        this(1000, true, 1);
+	private int retransmissions;
+
+	/**
+	 * Constructs a new VXI-11 discovery tool using the default parameters
+	 * 
+	 * <ul>
+	 * <li>
+	 * 1 second timeout
+	 * <li>
+	 * Don't resolve device identifiers
+	 * <li>
+	 * Retransmit 1 time 
+	 */
+	public VXI11Discovery() {
+		this(false);
 	}
 	
-	public VXI11Discovery(int timeout) {
-		this(timeout, true, 1);
+	/**
+	 * Constructs a new VXI-11 discovery tool
+	 * 
+	 * @param resolveDeviceInfo If {@code true} then after discovering devices it will attempt to do an identification query
+	 */
+	public VXI11Discovery(boolean resolveDeviceInfo) {
+		this(resolveDeviceInfo, 1);
 	}
 
-    /**
-     * Constructs a new VXI-11 discovery using the given parameters
-     * @param timeout Time to wait for responses
-     * @param resolveDeviceInfo if {@code true} then for every response it will try to do an *IDN? query
-     * @param retransmissions The number of retranmissions
-     */
-    public VXI11Discovery(int timeout, boolean resolveDeviceInfo, int retransmissions) {
-        this.timeout = timeout;
-        this.resolveDeviceInfo = resolveDeviceInfo;
-        this.retransmissions = retransmissions;
-    }
+	/**
+	 * Constructs a new VXI-11 discovery tool
+	 * 
+	 * @param resolveDeviceInfo If {@code true} then after discovering devices it will attempt to do an identification query
+	 * @param retransmissions The number of retransmissions when broadcasting the portmap message, 
+	 * 		{@code 0} specifies no retranmissions so it will do a total of {@code 1} tranmission
+	 */
+	public VXI11Discovery(boolean resolveDeviceInfo, int retransmissions) {
+		this(resolveDeviceInfo, retransmissions, DEFAULT_TIMEOUT);
+	}
 
-    @Override
-    public Map<InetAddress, DeviceIdentifier> discover(NetworkInterface networkInterface) throws IOException {
-        try {
-            InetAddress bcast = getBroadcastAddress(networkInterface);
-            OncRpcUdpClient rpcClient = (OncRpcUdpClient) OncRpcUdpClient.newOncRpcClient(bcast, Portmap.PROGRAM, Portmap.VERSION, Portmap.PORT, OncRpcProtocols.ONCRPC_UDP);
-            rpcClient.setTimeout(timeout);
+	/**
+	 * Constructs a new VXI-11 discovery tool
+	 * 
+	 * @param resolveDeviceInfo If {@code true} then after discovering devices it will attempt to do an identification query
+	 * @param retransmissions The number of retransmissions when broadcasting the portmap message, 
+	 * 		{@code 0} specifies no retranmissions so it will do a total of {@code 1} tranmission
+	 * @param timeout Time to wait for portmap responses in milliseconds
+	 */
+	public VXI11Discovery(boolean resolveDeviceInfo, int retransmissions, int timeout) {
+		this.timeout = timeout;
+		this.resolveDeviceInfo = resolveDeviceInfo;
+		this.retransmissions = retransmissions;
+	}
 
-            Map<InetAddress, DeviceIdentifier> devices = new HashMap<>();
-            OncRpcBroadcastListener callback = new OncRpcBroadcastListener(){
-                @Override
-                public void replyReceived(OncRpcBroadcastEvent evt) {
-                    devices.put(evt.getReplyAddress(), DeviceIdentifier.UNKNOWN);
-                }
-            };
+	@Override
+	public Set<VXI11InstrumentEndpoint> discover(NetworkInterface networkInterface) throws IOException {
+		try {
+			InetAddress bcast = getBroadcastAddress(networkInterface);
+			OncRpcUdpClient rpcClient = (OncRpcUdpClient) OncRpcUdpClient.newOncRpcClient(bcast, Portmap.PROGRAM, Portmap.VERSION, Portmap.PORT, OncRpcProtocols.ONCRPC_UDP);
+			rpcClient.setTimeout(timeout);
 
-            PortmapResponse response = new PortmapResponse();
+			Set<VXI11InstrumentEndpoint> devices = new HashSet<>();
 
-            for(int i = 0; i < retransmissions + 1; i++) {
-                rpcClient.broadcastCall(Portmap.PROC_GETPORT, new PortmapParams(VXI11.DeviceCore.PROGRAM, VXI11.DeviceCore.VERSION, OncRpcProtocols.ONCRPC_TCP, 4), response, callback);
-            }
+			PortmapResponse response = new PortmapResponse();
+			OncRpcBroadcastListener callback = new OncRpcBroadcastListener(){
+				@Override
+				public void replyReceived(OncRpcBroadcastEvent evt) {
+					VXI11InstrumentEndpoint endpoint = new VXI11InstrumentEndpoint(evt.getReplyAddress(), response.getPort(), DeviceIdentifier.UNKNOWN);
+					devices.add(endpoint);
+				}
+			};
 
-            if(resolveDeviceInfo) {
-                devices.replaceAll((ip, dev) -> {
-                    try(RawSCPISocket socket = new RawSCPISocket(new VXI11Socket(ip, "inst0"))) {
-                        return socket.getDeviceIdentifier();
-                    } catch(IOException e) {
-						//TODO: log warn
-                        //log.warn("Failed to resolve device identifier of " + ip);
-                        return dev;
-                    }
-                });
-            }
+			for(int i = 0; i < retransmissions + 1; i++) {
+				rpcClient.broadcastCall(Portmap.PROC_GETPORT, new PortmapParams(VXI11.DeviceCore.PROGRAM, VXI11.DeviceCore.VERSION, OncRpcProtocols.ONCRPC_TCP, 4), response, callback);
+			}
 
-            return devices;
-        } catch(OncRpcException e) {
-            throw new IOException(e);
-        } catch(IllegalArgumentException e) {
-            return Collections.emptyMap();
-        }
-    }
+			if(resolveDeviceInfo) {
+				devices.stream().map(endpoint -> {
+					try(RawSCPISocket socket = new RawSCPISocket(endpoint.getSocket())) {
+						return new VXI11InstrumentEndpoint(endpoint.getHost(), endpoint.getPort(), socket.getDeviceIdentifier());
+					} catch(IOException e) {
+						return endpoint;
+					}
+				}).forEach(devices::add);
+			}
 
-    /**
-     * Returns a broadcast address for the given network interface
-     * @param networkInterface Network interface
-     * @return Broadcast IP Address
-     * @throws SocketException If the network interface is unavailable
-     */
-    private static InetAddress getBroadcastAddress(NetworkInterface networkInterface) throws SocketException {
-        if (!networkInterface.isUp() || networkInterface.isVirtual()) {
-            throw new IllegalArgumentException("Network interface unavailable or is virtual.");
-        }
-        Optional<InterfaceAddress> address = networkInterface.getInterfaceAddresses().stream()
-                                                            .filter(addr -> addr.getBroadcast() != null).findFirst();
-        return address.orElseThrow(() -> new IllegalArgumentException("No broadcast address found.")).getBroadcast();
-    }
+			return devices;
+		} catch(OncRpcException e) {
+			throw new IOException(e);
+		} catch(IllegalArgumentException e) {
+			return Collections.emptySet();
+		}
+	}
+
+	/**
+	 * Returns a broadcast address for the given network interface
+	 * 
+	 * @param networkInterface Network interface
+	 * @return Broadcast IP Address
+	 * @throws SocketException If the network interface is unavailable
+	 */
+	private static InetAddress getBroadcastAddress(NetworkInterface networkInterface) throws SocketException {
+		if (!networkInterface.isUp() || networkInterface.isVirtual()) {
+			throw new IllegalArgumentException("Network interface '" + networkInterface.getName() + "' unavailable or is virtual.");
+		}
+		Optional<InterfaceAddress> address = networkInterface.getInterfaceAddresses().stream()
+															.filter(addr -> addr.getBroadcast() != null).findFirst();
+		return address.orElseThrow(() -> new IllegalArgumentException("Network interface '" + networkInterface.getName() + "' has no broadcast address")).getBroadcast();
+	}
+	
+	public static class VXI11InstrumentEndpoint extends LXIDiscovery.InstrumentEndpoint {
+
+		public VXI11InstrumentEndpoint(InetAddress host, int port, DeviceIdentifier deviceIdentifier) {
+			super(host, port, deviceIdentifier);
+		}
+
+		public VXI11Socket getSocket() throws IOException {
+			return new VXI11Socket(this.getHost(), this.getPort(), "inst0");
+		}
+	}
 
 }

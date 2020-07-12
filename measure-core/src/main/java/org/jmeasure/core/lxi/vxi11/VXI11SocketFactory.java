@@ -36,7 +36,6 @@ public class VXI11SocketFactory implements ISocketFactory {
 			String host = matcher.group("host");
 			String instrument = matcher.group("instrument");
 
-			//TODO: add factory default configuration
             return new VXI11Socket(InetAddress.getByName(host), instrument);
 		}
 		throw new UnsupportedSocketException();

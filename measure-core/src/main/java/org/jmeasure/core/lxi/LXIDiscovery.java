@@ -3,7 +3,8 @@ package org.jmeasure.core.lxi;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import org.jmeasure.core.visa.DeviceIdentifier;
 
@@ -16,10 +17,43 @@ public interface LXIDiscovery {
      * Returns LXI devices found through the given network interface
      * 
      * @param networkInterface Network Interface
-     * @return Mapping of IP addresses to Device identifiers, if the identifier cannot or shouldn't be resolved 
-     * then it should default to {@code DeviceIdentifier.UNKNOWN}
+     * @return Set of Instrument endpoints that can be used to connect to the devices
      * @throws IOException If there was an error during device discovery
      */
-    Map<InetAddress, DeviceIdentifier> discover(NetworkInterface networkInterface) throws IOException;
-    
+    Set<? extends InstrumentEndpoint> discover(NetworkInterface networkInterface) throws IOException;
+	
+	/**
+	 * 
+	 */
+	public abstract static class InstrumentEndpoint {
+
+		private InetAddress host;
+
+		private int port;
+
+		private DeviceIdentifier deviceIdentifier;
+
+		public InstrumentEndpoint(InetAddress host, int port, DeviceIdentifier deviceIdentifier) {
+			this.host = host;
+			this.deviceIdentifier = deviceIdentifier;
+		}
+
+		public InetAddress getHost() {
+			return host;
+		}
+
+		public int getPort() {
+			return port;
+		}
+
+		public DeviceIdentifier getDeviceIdentifier() {
+			return deviceIdentifier;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(host, port);
+		}
+		
+	}
 }
