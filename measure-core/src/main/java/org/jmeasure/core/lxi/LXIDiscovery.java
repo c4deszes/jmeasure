@@ -35,6 +35,7 @@ public interface LXIDiscovery {
 
 		public InstrumentEndpoint(InetAddress host, int port, DeviceIdentifier deviceIdentifier) {
 			this.host = host;
+			this.port = port;
 			this.deviceIdentifier = deviceIdentifier;
 		}
 
@@ -48,6 +49,15 @@ public interface LXIDiscovery {
 
 		public DeviceIdentifier getDeviceIdentifier() {
 			return deviceIdentifier;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(!(obj instanceof InstrumentEndpoint)) {
+				return false;
+			}
+			InstrumentEndpoint endpoint = (InstrumentEndpoint) obj;
+			return host.equals(endpoint.host) && port == endpoint.port;
 		}
 
 		@Override

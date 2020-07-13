@@ -71,8 +71,7 @@ public class LXIDiscover implements Callable<Integer> {
 		@Option(names = { "--vxi11" }, description = "Enables VXI-11 based instrument discovery")
 		boolean vxi11DiscoveryEnabled = true;
 
-		@Option(names = {
-				"--vxi11-no-resolve" }, description = "Disables automatic device identification")
+		@Option(names = {"--vxi11-no-resolve"}, description = "Disables automatic device identification")
 		boolean vxi11noResolve = false;
 
 		@Option(names = {"--vxi11-retransmissions" }, description = "Number of retransmission, useful when using unreliable connection")
@@ -100,7 +99,6 @@ public class LXIDiscover implements Callable<Integer> {
 
 	@Override
 	public Integer call() throws Exception {
-
 		//Collecting network interfaces to discover on
 		Stream<NetworkInterface> interfaces;
 		if (networkInterface == null) {
@@ -119,26 +117,26 @@ public class LXIDiscover implements Callable<Integer> {
 		//Running discovery tool
 		LXIDiscovery discoveryTool = discoverySettings.discovery();
 		List<String> warnings = new ArrayList<>();
-		Stream<InstrumentEndpoint> instruments = interfaces.flatMap(i -> {
+		Set<InstrumentEndpoint> instruments = interfaces.flatMap(i -> {
 			try {
 				return discoveryTool.discover(i).stream();
 			} catch (Exception e) {
 				if(!noWarnings) {
-					warnings.add("Warning: " + e.getMessage());
+					warnings.add("Warning " + e.getClass() + ":" + e.getMessage());
 				}
-				return Collections.<InstrumentEndpoint>emptyList().stream();
+				return Collections.<InstrumentEndpoint>emptySet().stream();
 			}
-		});
+		}).collect(Collectors.toCollection(HashSet::new));
 
 		//Printing out the result
 		if(jsonOutput) {
 			ObjectMapper mapper = new ObjectMapper();
-			InstrumentListJSON json = new InstrumentListJSON(instruments.collect(Collectors.toSet()), warnings);
+			InstrumentListJSON json = new InstrumentListJSON(instruments, warnings);
 			mapper.writeValue(System.out, json);
 		}
 		else {
 			instruments.forEach(endpoint -> {
-				System.out.println("Found " + endpoint.getDeviceIdentifier().value() + "at " + endpoint.getHost() + ":" + endpoint.getPort() + " ("+endpoint.getClass().getSimpleName()+")");
+				System.out.println("Found " + endpoint.getDeviceIdentifier().value() + " at " + endpoint.getHost() + ":" + endpoint.getPort() + " ("+endpoint.getClass().getSimpleName()+")");
 			});
 			warnings.forEach(warning -> {
 				System.out.println(warning);

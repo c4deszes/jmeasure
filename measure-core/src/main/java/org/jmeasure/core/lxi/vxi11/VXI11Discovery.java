@@ -6,11 +6,10 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.acplt.oncrpc.OncRpcBroadcastEvent;
 import org.acplt.oncrpc.OncRpcBroadcastListener;
@@ -117,13 +116,14 @@ public class VXI11Discovery implements LXIDiscovery {
 			}
 
 			if(resolveDeviceInfo) {
-				devices.stream().map(endpoint -> {
-					try(RawSCPISocket socket = new RawSCPISocket(endpoint.getSocket())) {
+				Set<VXI11InstrumentEndpoint> resolved = devices.stream().map(endpoint -> {
+					try(RawSCPISocket socket = new RawSCPISocket(getSocket(endpoint))) {
 						return new VXI11InstrumentEndpoint(endpoint.getHost(), endpoint.getPort(), socket.getDeviceIdentifier());
 					} catch(IOException e) {
 						return endpoint;
 					}
-				}).forEach(devices::add);
+				}).collect(Collectors.toSet());
+				return resolved;
 			}
 
 			return devices;
@@ -149,15 +149,15 @@ public class VXI11Discovery implements LXIDiscovery {
 															.filter(addr -> addr.getBroadcast() != null).findFirst();
 		return address.orElseThrow(() -> new IllegalArgumentException("Network interface '" + networkInterface.getName() + "' has no broadcast address")).getBroadcast();
 	}
+
+	public static VXI11Socket getSocket(VXI11InstrumentEndpoint endpoint) throws IOException {
+		return new VXI11Socket(endpoint.getHost(),endpoint.getPort(), "inst0");
+	}
 	
 	public static class VXI11InstrumentEndpoint extends LXIDiscovery.InstrumentEndpoint {
 
 		public VXI11InstrumentEndpoint(InetAddress host, int port, DeviceIdentifier deviceIdentifier) {
 			super(host, port, deviceIdentifier);
-		}
-
-		public VXI11Socket getSocket() throws IOException {
-			return new VXI11Socket(this.getHost(), this.getPort(), "inst0");
 		}
 	}
 
