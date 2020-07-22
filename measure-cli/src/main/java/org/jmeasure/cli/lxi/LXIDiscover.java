@@ -39,58 +39,65 @@ public class LXIDiscover implements Callable<Integer> {
 
 	@Option(names = { "--interface",
 			"-i" }, description = "Network interface to discover on, if not specified then it will broadcast on all interfaces", required = false)
-	NetworkInterface networkInterface;
+	public NetworkInterface networkInterface;
 
 	@ArgGroup(exclusive = true)
-	DiscoverySettings discoverySettings;
+	public DiscoverySettings discoverySettings;
 
 	@Option(names = {"--json"}, description = "Outputs a JSON formatted instrument array", defaultValue = "false")
-	boolean jsonOutput;
+	public boolean jsonOutput;
 
 	@Option(names = {"--no-warnings"}, description = "Disables warnings in the output", defaultValue = "false")
-	boolean noWarnings;
+	public boolean noWarnings;
 
 	public LXIDiscover() {
 		this.discoverySettings = new DiscoverySettings();
 		this.discoverySettings.vxi11Settings = new VXI11Settings();
 	}
 
-	static class DiscoverySettings {
+	public static class DiscoverySettings {
 		@ArgGroup(exclusive = false)
-		VXI11Settings vxi11Settings;
+		public VXI11Settings vxi11Settings;
 
 		@ArgGroup(exclusive = false)
-		MDNSSettings mdnsSettings;
+		public MDNSSettings mdnsSettings;
 
 		LXIDiscovery discovery() {
 			return vxi11Settings != null ? vxi11Settings.discovery() : mdnsSettings.discovery();
 		}
 	}
 
-	static class VXI11Settings {
-		@Option(names = { "--vxi11" }, description = "Enables VXI-11 based instrument discovery")
-		boolean vxi11DiscoveryEnabled = true;
+	public static class VXI11Settings {
+		@Option(names = { "--vxi11" }, description = "Enables VXI-11 based instrument discovery", defaultValue = "true")
+		public boolean vxi11DiscoveryEnabled;
 
-		@Option(names = {"--vxi11-no-resolve"}, description = "Disables automatic device identification")
-		boolean vxi11noResolve = false;
+		@Option(names = {"--vxi11-no-resolve"}, description = "Disables automatic device identification", defaultValue = "false")
+		public boolean vxi11noResolve;
 
-		@Option(names = {"--vxi11-retransmissions" }, description = "Number of retransmission, useful when using unreliable connection")
-		int vxi11retransmissions = 1;
+		@Option(names = {"--vxi11-retransmissions" }, description = "Number of retransmission, useful when using unreliable connection", defaultValue = "1")
+		public int vxi11retransmissions;
 
-		@Option(names = {"--vxi11-timeout" }, description = "Specify the timeout of a response in milliseconds")
-		int vxi11timeout = 1000;
+		@Option(names = {"--vxi11-timeout" }, description = "Specify the timeout of a response in milliseconds", defaultValue = "1000")
+		public int vxi11timeout;
+
+		public VXI11Settings() {
+			this.vxi11DiscoveryEnabled = true;
+			this.vxi11noResolve = false;
+			this.vxi11retransmissions = 1;
+			this.vxi11timeout = 1000;
+		}
 
 		LXIDiscovery discovery() {
 			return new VXI11Discovery(!vxi11noResolve, vxi11retransmissions, vxi11timeout);
 		}
 	}
 
-	static class MDNSSettings {
+	public static class MDNSSettings {
 		@Option(names = { "--mdns" }, description = "Enables mDNS based instrument discovery", defaultValue = "false")
-		boolean mdnsDiscoveryEnabled;
+		public boolean mdnsDiscoveryEnabled;
 
 		@Option(names = { "--mdns-services" }, description = "Specify mDNS service types to search")
-		List<MDNSServiceType> mdnsServiceTypes = Collections.singletonList(MDNSServiceType.LXI);
+		public List<MDNSServiceType> mdnsServiceTypes = Collections.singletonList(MDNSServiceType.LXI);
 
 		LXIDiscovery discovery() {
 			return new MDNSDiscovery(mdnsServiceTypes);
@@ -142,7 +149,6 @@ public class LXIDiscover implements Callable<Integer> {
 				System.out.println(warning);
 			});
 		}
-
 		return 0;
 	}
 
