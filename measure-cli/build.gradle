@@ -1,7 +1,24 @@
+plugins {
+	id 'com.github.johnrengelman.shadow' version '6.0.0'
+	id 'com.palantir.graal' version '0.6.0'
+}
+
 description = 'Allows basic interaction with test and measurement devices via a command line interface'
+
+jar {
+	manifest {
+		attributes 'Main-Class': 'org.jmeasure.cli.JMeasureCLI'
+	}
+}
+
+graal {
+    mainClass 'org.jmeasure.cli.JMeasureCLI'
+    outputName 'graalTest'
+}
 
 dependencies {
 	implementation project(':core')
 
 	implementation 'info.picocli:picocli:4.3.2'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
 }

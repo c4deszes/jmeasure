@@ -1,5 +1,9 @@
 package org.jmeasure.core.lxi.mdns;
 
+/**
+ * Contains mDNS service types that are used to discover
+ * LXI capable devices
+ */
 public enum MDNSServiceType {
 	LXI("_lxi._tcp.local"), 
 	HTTP("_http._tcp.local"), 
@@ -16,6 +20,10 @@ public enum MDNSServiceType {
 		this.fqdn = fqdn;
 	}
 
+	/**
+	 * Returns the fully qualified name of the mDNS service
+	 * @return Fully Qualified mDNS service name
+	 */
 	public String fqdn() {
 		return fqdn;
 	}
