@@ -35,7 +35,7 @@ public class MockSDG1000X extends MockSCPISocket {
 
 	@Override
 	public void onReset() {
-		freq = Units.kilo(1);
+		//freq = Units.kilo(1);
 	}
 
 	@Override

@@ -2,14 +2,22 @@ package org.jmeasure.cli.scpi;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import org.jmeasure.cli.visa.VISASocketOption;
 
 import picocli.CommandLine.ArgGroup;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-public class SCPISend {
+@Command(name = "scpi-send")
+public class SCPISend implements Callable<Integer> {
 	
 	@ArgGroup(exclusive = true)
 	Input input;
+
+	@ArgGroup(exclusive = true)
+	VISASocketOption socketOption;
 	
 	class Input {
 		@Option(names = {"--commands", "-c"}, required = false)
@@ -20,5 +28,11 @@ public class SCPISend {
 
 		@Option(names = {"--interactive", "-i"}, required = true)
 		boolean interactive;
+	}
+
+	@Override
+	public Integer call() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

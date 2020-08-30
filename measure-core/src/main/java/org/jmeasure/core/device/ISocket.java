@@ -2,7 +2,6 @@ package org.jmeasure.core.device;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -38,5 +37,15 @@ public interface ISocket extends Connectable {
      * @throws IOException If there was an error during reception
      * @throws TimeoutException If the timeout has been reached
      */
-    ByteBuffer receive(final char termination, final long timeout) throws IOException, TimeoutException;
+	ByteBuffer receive(final char termination, final long timeout) throws IOException, TimeoutException;
+	
+	/**
+	 * Returns connection information
+	 * 
+	 * <p><b>Note: using the returned the String the factory must be able to recreate the connection 
+	 * (or there should be at least 1 public constructor with a single String parameter)</b>
+	 * 
+	 * @return Connection information
+	 */
+	public String getResourceString();
 }

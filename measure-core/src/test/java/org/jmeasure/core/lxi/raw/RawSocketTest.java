@@ -64,17 +64,11 @@ public class RawSocketTest extends RawSocketBase {
 
         socket.close();
         assertEquals(false, socket.isConnected());
-
-        socket.connect();
-        assertEquals(true, socket.isConnected());
-
-        socket.close();
     }
 
     @Test
     public void testConnectionIdempotent() throws IOException {
         RawSocket socket = new RawSocket("localhost", 50000, 0);
-        socket.connect();
         assertEquals(true, socket.isConnected());
 
         socket.close();

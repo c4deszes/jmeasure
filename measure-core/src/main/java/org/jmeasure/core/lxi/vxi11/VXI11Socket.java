@@ -51,6 +51,10 @@ public class VXI11Socket implements ISocket {
 
 	private transient CreateLinkResponse link;
 
+	public VXI11Socket(final InetAddress host) throws IOException {
+		this(host, 0, "inst0");
+	}
+
 	public VXI11Socket(final InetAddress host, final String instrumentName) throws IOException {
 		this(host, 0, instrumentName);
 	}
@@ -72,11 +76,6 @@ public class VXI11Socket implements ISocket {
 		this.ioTimeout = ioTimeout;
 		this.writeBlockSize = writeBlockSize;
 
-		this.connect();
-	}
-
-	@Override
-	public void connect() throws IOException {
 		try {
 			client = OncRpcClient.newOncRpcClient(host, VXI11.DeviceCore.PROGRAM, VXI11.DeviceCore.VERSION, port, OncRpcProtocols.ONCRPC_TCP);
 			link = createLink(CLIENT_ID, lock, lockTimeout, name);
@@ -145,7 +144,7 @@ public class VXI11Socket implements ISocket {
 			byte[] block = new byte[Math.min(size, writeBlockSize)];
 			while(offset < size) {
 				message.get(block, offset, size - offset > writeBlockSize ? writeBlockSize : size);
-				DeviceFlags flags = new DeviceFlags(false, offset + writeBlockSize > size, false);
+				DeviceFlags flags = new DeviceFlags(false, offset + writeBlockSize >= size, false);
 				DeviceWriteResponse response = this.write(link.getLinkId(), ioTimeout, lockTimeout, flags, block);
 				if(response.getError() != VXI11.ErrorCode.NO_ERROR) {
 					throw new VXI11Exception(response.getError());

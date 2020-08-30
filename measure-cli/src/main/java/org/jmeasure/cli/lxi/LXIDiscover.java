@@ -37,8 +37,10 @@ import picocli.CommandLine.Option;
 @Command(name = "lxi-discover")
 public class LXIDiscover implements Callable<Integer> {
 
-	@Option(names = { "--interface",
-			"-i" }, description = "Network interface to discover on, if not specified then it will broadcast on all interfaces", required = false)
+	@Option(
+		names = { "--interface", "-i" }, 
+		description = "Network interface to discover on, if not specified then it will broadcast on all interfaces", 
+		required = false)
 	public NetworkInterface networkInterface;
 
 	@ArgGroup(exclusive = true)

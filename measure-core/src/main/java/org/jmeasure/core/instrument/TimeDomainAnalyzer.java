@@ -11,74 +11,37 @@ import java.io.IOException;
  */
 public interface TimeDomainAnalyzer {
 
-	/**
-	 * Sets the timebase, including the trigger offset and seconds per division settings
-	 * 
-	 * <p>Note: since each scope will have different time divisions the user will instead use the Span value
-	 * to determine how wide of a time range he wants to look at. 
-	 * 
-	 * <p>The driver can round the span value to whatever is available, but should always round to a higher value
-	 * than specified
-	 * 
-	 * @param timebase Timebase setting
-	 */
-	void setTimebase(TimebaseSettings timebase) throws IOException;
+	//TODO: move to trigger subsystem
+	void setRunState(RunState state) throws InstrumentException;
 
-	/**
-	 * Sets trigger state, like Auto, Normal and Single shot capture
-	 * 
-	 * @param state Trigger state
-	 */
-	void setTriggerState(Trigger.State state) throws IOException;
-
-	public static class Trigger {
-	
-		public static class Settings {
-			int source;
-	
-			Type type;
-	
-	
-		}
-	
-		public static enum Type {
-			EDGE, SLEW, DROPOUT, INTERVAL, PULSE
-		}
-	
-		public static enum State {
-			AUTO, NORMAL, SINGLE, STOP
-		}
-	
+	public static enum RunState {
+		AUTO, NORMAL, SINGLE, STOP;
 	}
 
-	public static class TimebaseSettings extends EnumParameters<TimebaseParameter> {
+	AcquisitionBaseSystem acquisition();
+
+	public static interface AcquisitionBaseSystem {
+
+		void setTimespan(double span) throws InstrumentException;
+
+		void setSampleCount(long count) throws InstrumentException;
+
+		long getSampleCount() throws InstrumentException;
+
+		double getSampleRate() throws InstrumentException;
+
+		void setTimeOffset(double offset) throws InstrumentException;
 		
-		private TimebaseSettings() {
+		void setMode(AcquisitionMode mode) throws InstrumentException;
 
+		public static enum AcquisitionMode {
+			NORMAL, HIGH_RESOLUTION, AVERAGE, PEAK, ENVELOPE
 		}
 
-		public static TimebaseSettings builder() {
-			return new TimebaseSettings();
-		}
+		AcquisitionState getState() throws InstrumentException;
 
-		public TimebaseSettings offset(float seconds) {
-			this.put(TimebaseParameter.OFFSET, seconds);
-			return this;
+		public static enum AcquisitionState {
+			COMPLETE, INPROGRESS, UNKNOWN
 		}
-
-		public TimebaseSettings span(float seconds) {
-			this.put(TimebaseParameter.SPAN, seconds);
-			return this;
-		}
-
-		public TimebaseSettings span(float secPerDiv, int divs) {
-			this.put(TimebaseParameter.SPAN, secPerDiv * divs);
-			return this;
-		}
-		
-	}
-
-	public static enum TimebaseParameter {
-		OFFSET, SPAN
 	}
 }

@@ -21,7 +21,6 @@ public class SCPIAdapterTest {
         ISCPISocket filter = new SCPIFilter(new TestSCPISocket(), command -> {
             return true;
         });
-        filter.connect();
         filter.send(new SCPICommand("ABCD"));
         filter.close();
     }
@@ -31,7 +30,6 @@ public class SCPIAdapterTest {
         ISCPISocket filter = new SCPIFilter(new TestSCPISocket(), command -> {
             return true;
         });
-        filter.connect();
         filter.send(new SCPICommand("BLCK"));
         filter.close();
     }
@@ -44,7 +42,6 @@ public class SCPIAdapterTest {
             }
             return true;
         });
-        filter.connect();
         filter.send(new SCPICommand("BLCK"));
         filter.close();
     }

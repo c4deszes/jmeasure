@@ -1,4 +1,4 @@
-package org.jmeasure.siglent;
+package org.jmeasure.siglent.driver;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -11,7 +11,7 @@ import org.jmeasure.core.signal.Waveform;
 import org.jmeasure.core.signal.Waveform.WaveformParameter;
 import org.jmeasure.core.signal.Waveform.WaveformType;
 import org.jmeasure.core.signal.analog.AnalogSignal;
-import org.jmeasure.core.instrument.WaveformGenerator;
+import org.jmeasure.core.instrument.FunctionGenerator;
 import org.jmeasure.core.scpi.ISCPISocket;
 import org.jmeasure.core.scpi.SCPICommand;
 import org.jmeasure.core.scpi.SCPISocketAdapter;
@@ -22,7 +22,7 @@ import org.jmeasure.core.visa.DeviceIdentifier;
 /**
  * SDG1000X
  */
-public class SDG1000X extends SCPISocketAdapter implements WaveformGenerator {
+public class SDGDriver extends SCPISocketAdapter {
 
 	private final static Map<WaveformType, String> WF_TYPEMAP = new HashMap<>();
 
@@ -60,7 +60,7 @@ public class SDG1000X extends SCPISocketAdapter implements WaveformGenerator {
 
 	private EdgeSampler<Float> sampler = new EdgeSampler<Float>(WAVE_LENGTH);
 
-	public SDG1000X(ISCPISocket socket, DeviceIdentifier deviceIdentifier) throws IOException {
+	public SDGDriver(ISCPISocket socket, DeviceIdentifier deviceIdentifier) throws IOException {
 		super(socket, deviceIdentifier);
 	}
 
@@ -82,7 +82,7 @@ public class SDG1000X extends SCPISocketAdapter implements WaveformGenerator {
 	}
 
 	@Override
-	public synchronized void setAnalogSignal(int channel, Signal<Float> signal) throws IOException {
+	public synchronized void setAnalogArbitraryWaveform(int channel, Signal<Float> signal) throws IOException {
 		validateChannelNumber(channel);
 		if (signal.getData().size() != WAVE_LENGTH) {
 			signal = sampler.sample(signal);
@@ -173,7 +173,7 @@ public class SDG1000X extends SCPISocketAdapter implements WaveformGenerator {
 	}
 
 	@Override
-	public Optional<AnalogSignal> getAnalogSignal(String id) {
+	public Optional<AnalogSignal> getAnalogArbitraryWaveform(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

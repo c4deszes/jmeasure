@@ -24,14 +24,8 @@ public class MockSocket implements ISocket {
 
     public MockSocket(String className, String instrumentName) {
         this.className = className;
-        this.instrumentName = instrumentName;
-
-        this.connect();
-    }
-
-    @Override
-    public void connect() {
-        this.connected = true;
+		this.instrumentName = instrumentName;
+		this.connected = true;
     }
 
     @Override

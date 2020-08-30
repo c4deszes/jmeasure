@@ -1,5 +1,6 @@
 package org.jmeasure.core.serial;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jmeasure.core.visa.factory.ISocketFactory;
@@ -17,17 +18,22 @@ public class SerialSocketFactory implements ISocketFactory {
 	}
 
 	@Override
-	public SerialSocket create(String connectionInfo) {
+	public SerialSocket create(String connectionInfo) throws IOException {
 		Matcher matcher = pattern.matcher(connectionInfo);
 		if(matcher.matches()) {
 			int port = Integer.parseInt(matcher.group("port"));
 			//TODO: serial configuration
-			return new SerialSocket(getPortPath(port), "");
+			return new SerialSocket(getPortPath(port), 9600);
 		}
 		throw new IllegalArgumentException(connectionInfo + " doesn't match " + pattern.pattern());
 	}
 
-	public String getPortPath(int port) {
+	/**
+	 * 
+	 * @param port
+	 * @return
+	 */
+	public static String getPortPath(int port) {
 		String os = System.getProperty("os.name");
 		if(os.startsWith("Windows")) {
 			return "COM" + port;
@@ -37,5 +43,7 @@ public class SerialSocketFactory implements ISocketFactory {
 		return null;
 	}
 
-    
+	public static int getPortNumber(String portPath) {
+		return 0;
+	}
 }

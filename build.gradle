@@ -13,6 +13,7 @@ subprojects {
 
     repositories {
         jcenter()
+		mavenCentral()
     }
 
     sourceCompatibility = '1.8'

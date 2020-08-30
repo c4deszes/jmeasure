@@ -27,7 +27,7 @@ public class Wiegand extends CompositeSignal<Boolean> {
 		if(Integer.bitCount(value & 0x000FFF) % 2 == 0) {
 			output |= 1;
 		}
-		
+		/*
 		float time = micro(1);
 		d0.add(0, true);
 		d1.add(0, true);
@@ -46,6 +46,7 @@ public class Wiegand extends CompositeSignal<Boolean> {
 		}
 		d0.add(time, true);
 		d1.add(time, true);
+		*/
 	}
 
 	private void generateWiegand26(int code) {

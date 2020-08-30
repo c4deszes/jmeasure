@@ -9,5 +9,5 @@ public interface VisaDeviceFactory<T> {
 
     boolean supports(ISocket socket);
 
-    T create(ISocket socket) throws UnsupportedSocketException;
+    T create(ISocket socket) throws VisaException, UnsupportedSocketException;
 }

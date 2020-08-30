@@ -22,7 +22,6 @@ public class MockSCPISocketTest {
     @Test
     public void testIdn() throws IOException {
         TestDevice device = new TestDevice();
-        device.connect();
         String response = device.query(SCPI.idnQuery, 1000).get();
         DeviceIdentifier id = DeviceIdentifier.from(response);
 
@@ -37,7 +36,6 @@ public class MockSCPISocketTest {
     @Test
     public void testBasicCommand() throws IOException {
         TestDevice device = new TestDevice();
-        device.connect();
         SCPICommand response = new SCPICommand(device.query(SCPICommand.builder().query("BASIC").build(), 1000).get());
 
         Assert.assertEquals(true, response.hasParameter("PARAM"));
@@ -49,7 +47,6 @@ public class MockSCPISocketTest {
     @Test
     public void testBasicParameter() throws IOException {
         TestDevice device = new TestDevice();
-        device.connect();
         SCPICommand response = new SCPICommand(device.query(SCPICommand.builder().query("BASIC2").with("PARAM", "INPUT").build(), 1000).get());
 
         Assert.assertEquals(true, response.hasParameter("PARAM"));

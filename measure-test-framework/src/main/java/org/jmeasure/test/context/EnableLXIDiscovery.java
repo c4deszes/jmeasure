@@ -1,6 +1,5 @@
 package org.jmeasure.test.context;
 
-import org.jmeasure.core.lxi.mdns.MDNSDiscovery;
 import org.jmeasure.core.lxi.mdns.MDNSServiceType;
 
 /**

@@ -11,9 +11,11 @@ jar {
 	}
 }
 
+//TODO: launch4j config
+
 graal {
-    mainClass 'org.jmeasure.cli.JMeasureCLI'
-    outputName 'graalTest'
+	mainClass 'org.jmeasure.cli.JMeasureCLI'
+	outputName 'measure-cli-graal'
 }
 
 dependencies {

@@ -12,7 +12,7 @@ public class DCEfficiency {
 
 	DCLoad load;
 
-	float setVoltage;
+	float voltage;
 
 	float startCurrent;
 

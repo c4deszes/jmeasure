@@ -3,15 +3,8 @@ package org.jmeasure.spring.configuration;
 import java.util.List;
 import java.util.Set;
 
-import org.jmeasure.core.scpi.factory.ISCPIDeviceFactory;
-import org.jmeasure.core.scpi.factory.ISCPISocketFactory;
-import org.jmeasure.core.scpi.factory.SCPIDeviceFactory;
-import org.jmeasure.core.scpi.factory.SCPISocketFactory;
 import org.jmeasure.core.scpi.mock.MockSCPIClass;
 import org.jmeasure.core.scpi.mock.MockSCPISocket;
-import org.jmeasure.core.scpi.mock.MockSCPISocketFactory;
-import org.jmeasure.core.scpi.socket.RawSCPISocketFactory;
-import org.jmeasure.siglent.SiglentDeviceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -30,12 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SCPISocketFactoryAutoConfiguration {
 
-	@Bean
-	@Order
-	public RawSCPISocketFactory rawSCPISocketFactory() {
-		return new RawSCPISocketFactory();
-	}
-
+	/*
 	@Bean
 	public MockSCPISocketFactory mockSCPISocketFactory() {
 		MockSCPISocketFactory factory = new MockSCPISocketFactory();
@@ -56,20 +44,5 @@ public class SCPISocketFactoryAutoConfiguration {
 		});
 		return factory;
 	}
-
-    @Bean
-    public SCPISocketFactory scpiSocketFactory(final List<ISCPISocketFactory> factories)  {
-        return new SCPISocketFactory(factories);
-    }
-    
-    @Bean
-	@ConditionalOnClass(SiglentDeviceFactory.class)
-	public SiglentDeviceFactory siglent() {
-		return new SiglentDeviceFactory();
-	}
-
-	@Bean
-	public SCPIDeviceFactory deviceFactory(final List<ISCPIDeviceFactory> factories) {
-		return new SCPIDeviceFactory(factories);
-	}
+	*/
 }

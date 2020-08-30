@@ -16,73 +16,68 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 @RunWith(BlockJUnit4ClassRunner.class)
 public class MockSocketTest {
 
-    @Test
-    public void testConstructorDefault() {
-        MockSocket socket = new MockSocket("TestDevice", "wavegen");
-        assertEquals(true, socket.isConnected());
-        assertEquals("TestDevice", socket.getClassName());
-        assertEquals("wavegen", socket.getInstrumentName());
+	@Test
+	public void testConstructorDefault() {
+		MockSocket socket = new MockSocket("TestDevice", "wavegen");
+		assertEquals(true, socket.isConnected());
+		assertEquals("TestDevice", socket.getClassName());
+		assertEquals("wavegen", socket.getInstrumentName());
 
-        socket.close();
-    }
+		socket.close();
+	}
 
-    @Test
-    public void testConstructorNoInstrumentName() {
-        MockSocket socket = new MockSocket("TestDevice");
-        assertEquals(true, socket.isConnected());
-        assertEquals("TestDevice", socket.getClassName());
-        assertEquals(false, socket.getInstrumentName() != null);
+	@Test
+	public void testConstructorNoInstrumentName() {
+		MockSocket socket = new MockSocket("TestDevice");
+		assertEquals(true, socket.isConnected());
+		assertEquals("TestDevice", socket.getClassName());
+		assertEquals(false, socket.getInstrumentName() != null);
 
-        socket.close();
-    }
+		socket.close();
+	}
 
-    @Test
-    public void testResourceString() {
-        MockSocket socket = new MockSocket("TestDevice", "inst0");
-        assertEquals("MOCK::TestDevice::inst0::INSTR", socket.getResourceString());
+	@Test
+	public void testResourceString() {
+		MockSocket socket = new MockSocket("TestDevice", "inst0");
+		assertEquals("MOCK::TestDevice::inst0::INSTR", socket.getResourceString());
 
-        socket.close();
-    }
+		socket.close();
+	}
 
-    @Test
-    public void testResourceStringNoInstrumentName() {
-        MockSocket socket = new MockSocket("TestDevice");
-        assertEquals("MOCK::TestDevice::INSTR", socket.getResourceString());
+	@Test
+	public void testResourceStringNoInstrumentName() {
+		MockSocket socket = new MockSocket("TestDevice");
+		assertEquals("MOCK::TestDevice::INSTR", socket.getResourceString());
 
-        socket.close();
-    }
+		socket.close();
+	}
 
-    @Test
-    public void testConnectionLifecycle() {
-        MockSocket socket = new MockSocket("TestDevice", "wavegen");
-        assertEquals(true, socket.isConnected());
+	@Test
+	public void testConnectionLifecycle() {
+		MockSocket socket = new MockSocket("TestDevice", "wavegen");
+		assertEquals(true, socket.isConnected());
 
-        socket.close();
-        assertEquals(false, socket.isConnected());
+		socket.close();
+		assertEquals(false, socket.isConnected());
+	}
 
-        socket.connect();
-        assertEquals(true, socket.isConnected());
+	@Test
+	public void testConnectionIdempotent() {
+		MockSocket socket = new MockSocket("TestDevice", "wavegen");
+		assertEquals(true, socket.isConnected());
 
-        socket.close();
-    }
+		socket.close();
+		assertEquals(false, socket.isConnected());
+		socket.close();
+		assertEquals(false, socket.isConnected());
+	}
 
-    @Test
-    public void testConnectionIdempotent() {
-        MockSocket socket = new MockSocket("TestDevice", "wavegen");
-        socket.connect();
-        assertEquals(true, socket.isConnected());
-
-        socket.close();
-        socket.close();
-        assertEquals(false, socket.isConnected());
-    }
-
-    @Test
-    public void testCommunication() throws IOException, TimeoutException {
-        MockSocket socket = new MockSocket("TestDevice", "wavegen");
-        socket.send(ByteBuffer.allocate(1));
-        socket.receive(1, 0);
-        socket.close();
-    }
-    
+	@Test
+	public void testCommunication() throws IOException, TimeoutException {
+		MockSocket socket = new MockSocket("TestDevice", "wavegen");
+		socket.send(ByteBuffer.allocate(1));
+		socket.receive(1, 0);
+		socket.close();
+	}
+	
 }

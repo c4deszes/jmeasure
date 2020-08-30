@@ -1,9 +1,10 @@
 package org.jmeasure.core.instrument;
 
+import org.jmeasure.core.instrument.common.Coupling;
 import org.jmeasure.core.signal.analog.AnalogSignal;
-import org.jmeasure.core.util.EnumParameters;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -11,66 +12,40 @@ import java.util.Optional;
  * 
  * @author Balazs Eszes
  */
-public interface Oscilloscope extends TimeDomainAnalyzer, AutoCloseable {
+public interface Oscilloscope extends TimeDomainAnalyzer {
 
-	/**
-	 * Returns the number of available analog channels
-	 * 
-	 * @return Number of analog channels
-	 */
-	int getAnalogInputCount();
+	Collection<AnalogInput> getAnalogInputs();
 
-	/**
-	 * Sets the analog input settings for the given channel
-	 * 
-	 * @param channel Analog input channel
-	 * @param configuration Channel settings
-	 */
-	void setAnalogInput(int channel, AnalogInputConfiguration configuration) throws IOException;
-
-	/**
-	 * Returns the current configuration for the given channel
-	 * @param channel Analog input channel
-	 * @return Channel settings;
-	 */
-	AnalogInputConfiguration getAnalogInput(int channel) throws IOException;
-
-	/**
-	 * Returns the current analog signal recorded by the device
-	 * 
-	 * <p>It may set the trigger state to STOPPED for the duration of this method, but it has to restore the previous state
-	 * 
-	 * @param channel Analog input channel
-	 * @return Analog signal recorded
-	 */
-	Optional<AnalogSignal> getAnalogSignal(int channel) throws IOException;
-
-	/**
-	 * Sets the trigger of this device
-	 * @param trigger Trigger settings
-	 */
-	void setAnalogTrigger(Trigger.Settings trigger) throws IOException;
-
-	/**
-	 * Returns whether this device supports a particular parameter for an analog input
-	 * 
-	 * <p>For example, {@code supports(1, AnalogChannelParameter.LOAD, 50.0)} should return {@code true} if
-	 * the device is capable of having a 50Ohm input mode
-	 * 
-	 * @param channel Analog input channel
-	 * @param param Parameter type
-	 * @param value Parameter's intended value
-	 * @return {@code true} if the value is supported
-	 */
-	default boolean supports(int channel, AnalogInputParameter param, Object value) {
-		return false;
+	default AnalogInput getAnalogInput(int index) {
+		return this.getAnalogInputs().stream().skip(index).findFirst().get();
 	}
 
-	public static class AnalogInputConfiguration extends EnumParameters<AnalogInputParameter> {
-
+	default AnalogInput getAnalogInput(String name) {
+		return this.getAnalogInputs().stream().filter(channel -> channel.getName().equals(name)).findFirst().get();
 	}
 
-	public static enum AnalogInputParameter {
-		ENABLED, SCALE, OFFSET, COUPLING, PROBE_ATTENUATION, LOAD
+	public static interface AnalogInput {
+		String getName();
+
+		void setEnabled(boolean enabled) throws InstrumentException;
+
+		void setRange(double range) throws InstrumentException;
+
+		void setOffset(double offset) throws InstrumentException;
+
+		void setProbeAttenuation(double attenuation) throws InstrumentException;
+
+		void setProbeSense(boolean enable) throws InstrumentException;
+
+		void setImpedance(double impedance) throws InstrumentException;
+
+		void setBandwidthLimit(double bandwidthLimit) throws InstrumentException;
+
+		void setCoupling(Coupling coupling) throws InstrumentException;
+
+		Optional<AnalogSignal> getAnalogInputSignal(int channel) throws InstrumentException;
 	}
+
+	//Supplier<>
+
 }

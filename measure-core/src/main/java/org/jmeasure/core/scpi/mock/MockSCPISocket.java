@@ -36,11 +36,6 @@ public abstract class MockSCPISocket implements ISCPISocket {
 	}
 
 	@Override
-	public final void connect() throws IOException {
-		this.socket.connect();
-	}
-
-	@Override
 	public final void close() {
 		this.socket.close();
 	}
@@ -48,11 +43,6 @@ public abstract class MockSCPISocket implements ISCPISocket {
 	@Override
 	public final boolean isConnected() {
 		return this.socket.isConnected();
-	}
-
-	@Override
-	public String getResourceString() {
-		return this.socket.getResourceString();
 	}
 
 	@Override

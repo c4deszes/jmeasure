@@ -130,7 +130,7 @@ public class VXI11Discovery implements LXIDiscovery {
 		} catch(OncRpcException e) {
 			throw new IOException(e);
 		} catch(IllegalArgumentException e) {
-			return Collections.emptySet();
+			throw new IOException(e);
 		}
 	}
 
